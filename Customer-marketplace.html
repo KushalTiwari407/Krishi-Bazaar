@@ -1,0 +1,1029 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Marketplace - Krishi Bazaar</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        /* Marketplace Specific Styles */
+        .marketplace-header {
+            background: linear-gradient(135deg, #4CAF50, #2E7D32);
+            color: white;
+            padding: 30px;
+            border-radius: var(--border-radius);
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .marketplace-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" opacity="0.1"><path d="M50,20 L80,80 L20,80 Z" fill="white"/><circle cx="50" cy="50" r="20" fill="white"/></svg>');
+            background-size: 100px;
+        }
+        
+        .marketplace-tools {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .filter-section {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 25px;
+            box-shadow: var(--shadow);
+            margin-bottom: 30px;
+            flex: 1;
+            min-width: 250px;
+        }
+        
+        .filter-section h3 {
+            margin-bottom: 20px;
+            color: var(--text-dark);
+            border-bottom: 2px solid var(--light-gray);
+            padding-bottom: 10px;
+        }
+        
+        .filter-group {
+            margin-bottom: 20px;
+        }
+        
+        .filter-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-dark);
+            font-weight: 500;
+        }
+        
+        .filter-select {
+            width: 100%;
+            padding: 10px 15px;
+            border: 1px solid var(--medium-gray);
+            border-radius: var(--border-radius);
+            background: white;
+            font-family: inherit;
+            font-size: 0.95rem;
+        }
+        
+        .price-range {
+            margin-top: 15px;
+        }
+        
+        .price-inputs {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .price-inputs input {
+            flex: 1;
+            padding: 8px 12px;
+            border: 1px solid var(--medium-gray);
+            border-radius: var(--border-radius);
+        }
+        
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+        
+        .product-card {
+            background: white;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        
+        .product-badge {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background: var(--primary-green);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            z-index: 1;
+        }
+        
+        .product-image {
+            height: 200px;
+            background: linear-gradient(45deg, #f0f7f0, #e8f5e9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .product-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .product-image i {
+            font-size: 4rem;
+            color: var(--primary-green);
+            opacity: 0.8;
+        }
+        
+        .product-info {
+            padding: 20px;
+        }
+        
+        .product-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--text-dark);
+        }
+        
+        .product-description {
+            color: var(--dark-gray);
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+        
+        .product-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+            color: var(--dark-gray);
+        }
+        
+        .product-price {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--primary-green);
+            margin-bottom: 15px;
+        }
+        
+        .product-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .farmer-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+            padding: 10px;
+            background: var(--light-gray);
+            border-radius: var(--border-radius);
+        }
+        
+        .farmer-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary-yellow);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: var(--text-dark);
+        }
+        
+        .farmer-details h4 {
+            margin-bottom: 5px;
+            font-size: 0.95rem;
+        }
+        
+        .farmer-details p {
+            font-size: 0.8rem;
+            color: var(--dark-gray);
+        }
+        
+        .search-results {
+            margin-bottom: 20px;
+            color: var(--dark-gray);
+        }
+        
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 40px;
+        }
+        
+        .pagination-btn {
+            padding: 10px 15px;
+            border: 1px solid var(--medium-gray);
+            border-radius: var(--border-radius);
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .pagination-btn:hover {
+            background: var(--light-gray);
+        }
+        
+        .pagination-btn.active {
+            background: var(--primary-green);
+            color: white;
+            border-color: var(--primary-green);
+        }
+        
+        .product-stats {
+            display: flex;
+            gap: 15px;
+            margin-top: 10px;
+            font-size: 0.85rem;
+            color: var(--dark-gray);
+        }
+        
+        .product-stat {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        @media (max-width: 768px) {
+            .marketplace-tools {
+                flex-direction: column;
+            }
+            
+            .products-grid {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+                gap: 20px;
+            }
+            
+            .product-actions {
+                flex-direction: column;
+            }
+            
+            .product-actions button {
+                width: 100%;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .marketplace-header {
+                padding: 20px;
+            }
+            
+            .products-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .product-image {
+                height: 150px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2><i class="fas fa-seedling"></i> <span>Krishi Bazaar</span></h2>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="customer-dashboard.html" data-page="dashboard"><i class="fas fa-tachometer-alt"></i> <span>Dashboard</span></a></li>
+                    <li><a href="Customer-marketplace.html" class="active" data-page="marketplace"><i class="fas fa-store"></i> <span>Marketplace</span></a></li>
+                    <li><a href="Customer-myorders.html" data-page="orders"><i class="fas fa-shopping-cart"></i> <span>My Orders</span></a></li>
+                    <li><a href="Customer-messages.html" data-page="messages"><i class="fas fa-comments"></i> <span>Messages</span></a></li>
+                    <li><a href="Customer-mycart.html" data-page="cart"><i class="fas fa-shopping-basket"></i> <span>My Cart</span></a></li>
+                    <li><a href="Customer-nepalmap.html" data-page="map"><i class="fas fa-map"></i> <span>Nepal Map</span></a></li>
+                    <li><a href="Customer-myprofile.html" data-page="profile"><i class="fas fa-user"></i> <span>My Profile</span></a></li>
+                    <li><a href="Customer-notifications.html" data-page="notifications"><i class="fas fa-bell"></i> <span>Notifications</span></a></li>
+                </ul>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <div class="user-avatar" id="sidebar-avatar">AD</div>
+                    <div>
+                        <h4 id="sidebar-username">Avash Dhakal</h4>
+                        <p id="sidebar-role">Customer</p>
+                    </div>
+                </div>
+                <button class="btn-secondary logout-btn" id="logout-btn">Logout</button>
+            </div>
+        </aside>
+        
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Topbar -->
+            <div class="topbar">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="global-search" placeholder="Search products, farmers...">
+                </div>
+                <div class="topbar-actions">
+                    <div class="notification-icon">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-badge" id="topbar-notification-count">3</span>
+                    </div>
+                    <div class="user-info">
+                        <div class="user-avatar" id="top-avatar">AD</div>
+                        <span id="top-username">Avash Dhakal</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Marketplace Header -->
+            <div class="marketplace-header">
+                <h1 class="page-title">Marketplace</h1>
+                <p>Discover fresh agricultural products from local farmers across Nepal</p>
+                <div class="search-results" id="search-results">Showing 24 products</div>
+            </div>
+            
+            <!-- Marketplace Tools -->
+            <div class="marketplace-tools">
+                <div class="filter-section">
+                    <h3>Filters</h3>
+                    
+                    <div class="filter-group">
+                        <label for="category">Category</label>
+                        <select id="category" class="filter-select">
+                            <option value="all">All Categories</option>
+                            <option value="vegetables">Vegetables</option>
+                            <option value="fruits">Fruits</option>
+                            <option value="grains">Grains</option>
+                            <option value="dairy">Dairy Products</option>
+                            <option value="spices">Spices</option>
+                            <option value="organic">Organic Products</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label for="location">Location</label>
+                        <select id="location" class="filter-select">
+                            <option value="all">All Locations</option>
+                            <option value="kathmandu">Kathmandu</option>
+                            <option value="pokhara">Pokhara</option>
+                            <option value="chitwan">Chitwan</option>
+                            <option value="biratnagar">Biratnagar</option>
+                            <option value="bhaktapur">Bhaktapur</option>
+                            <option value="lalitpur">Lalitpur</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label>Price Range (NPR)</label>
+                        <input type="range" id="price-range" min="0" max="5000" value="2500" class="price-range">
+                        <div class="price-inputs">
+                            <input type="number" id="min-price" placeholder="Min" value="0">
+                            <input type="number" id="max-price" placeholder="Max" value="5000">
+                        </div>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label for="sort">Sort By</label>
+                        <select id="sort" class="filter-select">
+                            <option value="recent">Most Recent</option>
+                            <option value="price-low">Price: Low to High</option>
+                            <option value="price-high">Price: High to Low</option>
+                            <option value="rating">Highest Rated</option>
+                            <option value="popular">Most Popular</option>
+                        </select>
+                    </div>
+                    
+                    <button class="btn-primary" id="apply-filters" style="width: 100%; margin-top: 20px;">
+                        <i class="fas fa-filter"></i> Apply Filters
+                    </button>
+                    <button class="btn-outline" id="clear-filters" style="width: 100%; margin-top: 10px;">
+                        <i class="fas fa-times"></i> Clear Filters
+                    </button>
+                </div>
+                
+                <!-- Products Grid -->
+                <div style="flex: 3;">
+                    <div class="products-grid" id="products-grid">
+                        <!-- Products will be loaded here -->
+                    </div>
+                    
+                    <!-- Pagination -->
+                    <div class="pagination" id="pagination">
+                        <!-- Pagination will be loaded here -->
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- Product Detail Modal -->
+    <div id="product-detail-modal" class="modal" style="display: none;">
+        <div class="modal-content" style="max-width: 800px;">
+            <div class="modal-header">
+                <h2>Product Details</h2>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="product-detail-content">
+                    <!-- Product details will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Marketplace JavaScript
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check login
+            const currentUser = JSON.parse(sessionStorage.getItem('currentUser'));
+            if (!currentUser) {
+                window.location.href = 'index.html';
+                return;
+            }
+            
+            // Initialize marketplace
+            initMarketplace(currentUser);
+            
+            // Load products
+            loadProducts();
+            
+            // Setup event listeners
+            setupMarketplaceEventListeners();
+        });
+        
+        function initMarketplace(user) {
+            // Update user info
+            updateUserInfo(user);
+            
+            // Update notification badge
+            updateNotificationBadge();
+        }
+        
+        function updateUserInfo(user) {
+            const avatarElements = document.querySelectorAll('.user-avatar');
+            const usernameElements = document.querySelectorAll('#sidebar-username, #top-username');
+            
+            const initials = user.name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
+            
+            avatarElements.forEach(el => {
+                el.textContent = initials;
+            });
+            
+            usernameElements.forEach(el => {
+                if (el) el.textContent = user.name;
+            });
+            
+            // Update sidebar role
+            const sidebarRole = document.getElementById('sidebar-role');
+            if (sidebarRole) {
+                sidebarRole.textContent = user.type === 'farmer' ? 'Farmer' : 'Customer';
+            }
+        }
+        
+        function updateNotificationBadge() {
+            const notificationCount = parseInt(sessionStorage.getItem('notificationCount') || '3');
+            const badge = document.getElementById('topbar-notification-count');
+            
+            if (badge) {
+                if (notificationCount > 0) {
+                    badge.textContent = notificationCount > 99 ? '99+' : notificationCount;
+                    badge.style.display = 'flex';
+                } else {
+                    badge.style.display = 'none';
+                }
+            }
+        }
+        
+        // Sample data for marketplace
+        const marketplaceData = {
+            products: [
+                {
+                    id: 1,
+                    name: 'Organic Tomatoes',
+                    description: 'Fresh organic tomatoes grown without pesticides',
+                    price: 'NPR 80/kg',
+                    category: 'vegetables',
+                    location: 'Kathmandu',
+                    farmer: 'Ram Shrestha',
+                    rating: 4.5,
+                    stock: 50,
+                    unit: 'kg',
+                    imageIcon: 'fas fa-seedling',
+                    badge: 'Organic',
+                    delivery: 'Available'
+                },
+                {
+                    id: 2,
+                    name: 'Fresh Mangoes',
+                    description: 'Sweet Alphonso mangoes from local orchards',
+                    price: 'NPR 150/kg',
+                    category: 'fruits',
+                    location: 'Pokhara',
+                    farmer: 'Sita Kumari',
+                    rating: 4.8,
+                    stock: 30,
+                    unit: 'kg',
+                    imageIcon: 'fas fa-apple-alt',
+                    badge: 'Seasonal',
+                    delivery: 'Available'
+                },
+                {
+                    id: 3,
+                    name: 'Basmati Rice',
+                    description: 'Premium quality basmati rice from Chitwan',
+                    price: 'NPR 180/kg',
+                    category: 'grains',
+                    location: 'Chitwan',
+                    farmer: 'Hari Prasad',
+                    rating: 4.2,
+                    stock: 100,
+                    unit: 'kg',
+                    imageIcon: 'fas fa-seedling',
+                    badge: '',
+                    delivery: 'Available'
+                },
+                {
+                    id: 4,
+                    name: 'Fresh Milk',
+                    description: 'Pure cow milk delivered daily',
+                    price: 'NPR 90/liter',
+                    category: 'dairy',
+                    location: 'Kathmandu',
+                    farmer: 'Gopal Yadav',
+                    rating: 4.6,
+                    stock: 40,
+                    unit: 'liter',
+                    imageIcon: 'fas fa-wine-bottle',
+                    badge: 'Fresh',
+                    delivery: 'Daily'
+                },
+                {
+                    id: 5,
+                    name: 'Ginger',
+                    description: 'Fresh ginger with strong aroma',
+                    price: 'NPR 250/kg',
+                    category: 'spices',
+                    location: 'Biratnagar',
+                    farmer: 'Bimal Karki',
+                    rating: 4.3,
+                    stock: 25,
+                    unit: 'kg',
+                    imageIcon: 'fas fa-spa',
+                    badge: 'Premium',
+                    delivery: 'Available'
+                },
+                {
+                    id: 6,
+                    name: 'Potatoes',
+                    description: 'Fresh potatoes from local farms',
+                    price: 'NPR 50/kg',
+                    category: 'vegetables',
+                    location: 'Bhaktapur',
+                    farmer: 'Sunita Gurung',
+                    rating: 4.0,
+                    stock: 80,
+                    unit: 'kg',
+                    imageIcon: 'fas fa-seedling',
+                    badge: '',
+                    delivery: 'Available'
+                },
+                {
+                    id: 7,
+                    name: 'Oranges',
+                    description: 'Juicy sweet oranges',
+                    price: 'NPR 100/kg',
+                    category: 'fruits',
+                    location: 'Pokhara',
+                    farmer: 'Sita Kumari',
+                    rating: 4.7,
+                    stock: 45,
+                    unit: 'kg',
+                    imageIcon: 'fas fa-lemon',
+                    badge: 'Sweet',
+                    delivery: 'Available'
+                },
+                {
+                    id: 8,
+                    name: 'Organic Spinach',
+                    description: 'Fresh organic spinach leaves',
+                    price: 'NPR 40/kg',
+                    category: 'vegetables',
+                    location: 'Lalitpur',
+                    farmer: 'Local Farmer',
+                    rating: 4.4,
+                    stock: 35,
+                    unit: 'kg',
+                    imageIcon: 'fas fa-leaf',
+                    badge: 'Organic',
+                    delivery: 'Available'
+                }
+            ]
+        };
+        
+        function loadProducts() {
+            const productsGrid = document.getElementById('products-grid');
+            const searchResults = document.getElementById('search-results');
+            
+            productsGrid.innerHTML = '';
+            
+            marketplaceData.products.forEach(product => {
+                const productCard = document.createElement('div');
+                productCard.className = 'product-card';
+                productCard.setAttribute('data-product-id', product.id);
+                
+                productCard.innerHTML = `
+                    ${product.badge ? `<div class="product-badge">${product.badge}</div>` : ''}
+                    <div class="product-image">
+                        <i class="${product.imageIcon}"></i>
+                    </div>
+                    <div class="product-info">
+                        <h3 class="product-title">${product.name}</h3>
+                        <p class="product-description">${product.description}</p>
+                        
+                        <div class="farmer-info">
+                            <div class="farmer-avatar">
+                                ${product.farmer.split(' ').map(n => n[0]).join('').substring(0, 2)}
+                            </div>
+                            <div class="farmer-details">
+                                <h4>${product.farmer}</h4>
+                                <p><i class="fas fa-map-marker-alt"></i> ${product.location}</p>
+                            </div>
+                        </div>
+                        
+                        <div class="product-meta">
+                            <span>Stock: ${product.stock} ${product.unit}</span>
+                            <span>
+                                <i class="fas fa-star" style="color: var(--primary-yellow);"></i> ${product.rating}
+                            </span>
+                        </div>
+                        
+                        <div class="product-price">${product.price}</div>
+                        
+                        <div class="product-stats">
+                            <div class="product-stat">
+                                <i class="fas fa-truck"></i> ${product.delivery}
+                            </div>
+                            <div class="product-stat">
+                                <i class="fas fa-box"></i> ${product.category}
+                            </div>
+                        </div>
+                        
+                        <div class="product-actions">
+                            <button class="btn-primary add-to-cart-btn" data-product-id="${product.id}" style="flex: 2;">
+                                <i class="fas fa-cart-plus"></i> Add to Cart
+                            </button>
+                            <button class="btn-outline view-product-btn" data-product-id="${product.id}" style="flex: 1;">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+                
+                productsGrid.appendChild(productCard);
+            });
+            
+            searchResults.textContent = `Showing ${marketplaceData.products.length} products`;
+            
+            // Load pagination
+            loadPagination();
+        }
+        
+        function loadPagination() {
+            const pagination = document.getElementById('pagination');
+            pagination.innerHTML = `
+                <button class="pagination-btn"><i class="fas fa-chevron-left"></i></button>
+                <button class="pagination-btn active">1</button>
+                <button class="pagination-btn">2</button>
+                <button class="pagination-btn">3</button>
+                <button class="pagination-btn"><i class="fas fa-chevron-right"></i></button>
+            `;
+        }
+        
+        function setupMarketplaceEventListeners() {
+            // Notification icon click
+            const notificationIcon = document.querySelector('.notification-icon');
+            if (notificationIcon) {
+                notificationIcon.addEventListener('click', function() {
+                    window.location.href = 'Customer-notifications.html';
+                });
+                notificationIcon.style.cursor = 'pointer';
+            }
+            
+            // Apply filters button
+            document.getElementById('apply-filters').addEventListener('click', function() {
+                applyFilters();
+            });
+            
+            // Clear filters button
+            document.getElementById('clear-filters').addEventListener('click', function() {
+                clearFilters();
+            });
+            
+            // Add to cart buttons
+            document.addEventListener('click', function(e) {
+                if (e.target.closest('.add-to-cart-btn')) {
+                    const productId = e.target.closest('.add-to-cart-btn').getAttribute('data-product-id');
+                    addToCart(productId);
+                }
+                
+                // View product buttons
+                if (e.target.closest('.view-product-btn')) {
+                    const productId = e.target.closest('.view-product-btn').getAttribute('data-product-id');
+                    showProductDetails(productId);
+                }
+                
+                // Pagination buttons
+                if (e.target.closest('.pagination-btn')) {
+                    const btn = e.target.closest('.pagination-btn');
+                    const paginationBtns = document.querySelectorAll('.pagination-btn');
+                    paginationBtns.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                }
+            });
+            
+            // Global search
+            document.getElementById('global-search').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    const searchTerm = this.value.trim();
+                    if (searchTerm) {
+                        searchProducts(searchTerm);
+                    }
+                }
+            });
+            
+            // Logout button
+            document.getElementById('logout-btn').addEventListener('click', function() {
+                logoutUser();
+            });
+            
+            // Close modal
+            document.addEventListener('click', function(e) {
+                if (e.target.classList.contains('close-modal') || 
+                    e.target.classList.contains('modal')) {
+                    closeProductModal();
+                }
+            });
+        }
+        
+        function applyFilters() {
+            const category = document.getElementById('category').value;
+            const location = document.getElementById('location').value;
+            const minPrice = document.getElementById('min-price').value;
+            const maxPrice = document.getElementById('max-price').value;
+            const sort = document.getElementById('sort').value;
+            
+            // In a real app, this would filter the products
+            alert(`Filters applied:\nCategory: ${category}\nLocation: ${location}\nPrice: NPR ${minPrice} - ${maxPrice}\nSort: ${sort}`);
+            
+            // Show loading state
+            const productsGrid = document.getElementById('products-grid');
+            productsGrid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px;">Loading filtered products...</div>';
+            
+            // Simulate API call
+            setTimeout(() => {
+                loadProducts();
+            }, 1000);
+        }
+        
+        function clearFilters() {
+            document.getElementById('category').value = 'all';
+            document.getElementById('location').value = 'all';
+            document.getElementById('min-price').value = '0';
+            document.getElementById('max-price').value = '5000';
+            document.getElementById('price-range').value = '2500';
+            document.getElementById('sort').value = 'recent';
+            
+            // Reload all products
+            loadProducts();
+        }
+        
+        function addToCart(productId) {
+            const product = marketplaceData.products.find(p => p.id == productId);
+            if (!product) return;
+            
+            // Get current cart from sessionStorage or initialize
+            let cart = JSON.parse(sessionStorage.getItem('cart')) || [];
+            
+            // Check if product already in cart
+            const existingItem = cart.find(item => item.id == productId);
+            
+            if (existingItem) {
+                existingItem.quantity += 1;
+            } else {
+                cart.push({
+                    id: product.id,
+                    name: product.name,
+                    price: product.price,
+                    farmer: product.farmer,
+                    quantity: 1,
+                    unit: product.unit
+                });
+            }
+            
+            // Save to sessionStorage
+            sessionStorage.setItem('cart', JSON.stringify(cart));
+            
+            // Show notification
+            showNotification(`${product.name} added to cart!`);
+        }
+        
+        function showProductDetails(productId) {
+            const product = marketplaceData.products.find(p => p.id == productId);
+            if (!product) return;
+            
+            const modal = document.getElementById('product-detail-modal');
+            const content = document.getElementById('product-detail-content');
+            
+            content.innerHTML = `
+                <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 30px;">
+                    <div>
+                        <div class="product-image" style="height: 250px; border-radius: 10px;">
+                            <i class="${product.imageIcon}" style="font-size: 5rem;"></i>
+                        </div>
+                        <div style="text-align: center; margin-top: 15px;">
+                            <div class="product-price" style="font-size: 1.8rem;">${product.price}</div>
+                            <div style="color: var(--dark-gray); margin-top: 5px;">${product.stock} ${product.unit} available</div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h3 style="margin-bottom: 10px; color: var(--text-dark);">${product.name}</h3>
+                        <div style="color: var(--primary-green); margin-bottom: 15px;">
+                            <i class="fas fa-star"></i> ${product.rating} Rating
+                        </div>
+                        
+                        <p style="color: var(--dark-gray); margin-bottom: 20px;">${product.description}</p>
+                        
+                        <div style="background: var(--light-gray); padding: 15px; border-radius: var(--border-radius); margin-bottom: 20px;">
+                            <h4 style="margin-bottom: 10px;">Product Details</h4>
+                            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
+                                <div>
+                                    <strong>Category:</strong>
+                                    <div>${product.category.charAt(0).toUpperCase() + product.category.slice(1)}</div>
+                                </div>
+                                <div>
+                                    <strong>Location:</strong>
+                                    <div><i class="fas fa-map-marker-alt"></i> ${product.location}</div>
+                                </div>
+                                <div>
+                                    <strong>Delivery:</strong>
+                                    <div>${product.delivery}</div>
+                                </div>
+                                <div>
+                                    <strong>Unit:</strong>
+                                    <div>${product.unit}</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div style="background: var(--light-gray); padding: 15px; border-radius: var(--border-radius); margin-bottom: 20px;">
+                            <h4 style="margin-bottom: 10px;">Farmer Information</h4>
+                            <div style="display: flex; align-items: center; gap: 15px;">
+                                <div class="farmer-avatar" style="width: 60px; height: 60px;">
+                                    ${product.farmer.split(' ').map(n => n[0]).join('').substring(0, 2)}
+                                </div>
+                                <div>
+                                    <h4 style="margin-bottom: 5px;">${product.farmer}</h4>
+                                    <div style="color: var(--dark-gray);">
+                                        <i class="fas fa-map-marker-alt"></i> ${product.location}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div style="display: flex; gap: 10px; margin-top: 20px;">
+                            <button class="btn-primary" id="modal-add-to-cart" style="flex: 2;">
+                                <i class="fas fa-cart-plus"></i> Add to Cart
+                            </button>
+                            <button class="btn-outline" id="contact-farmer">
+                                <i class="fas fa-comment"></i> Contact Farmer
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            modal.style.display = 'block';
+            
+            // Add event listeners for modal buttons
+            setTimeout(() => {
+                document.getElementById('modal-add-to-cart').addEventListener('click', function() {
+                    addToCart(productId);
+                    closeProductModal();
+                });
+                
+                document.getElementById('contact-farmer').addEventListener('click', function() {
+                    // Navigate to messages page
+                    sessionStorage.setItem('selectedFarmer', JSON.stringify({
+                        name: product.farmer,
+                        location: product.location
+                    }));
+                    window.location.href = 'Customer-messages.html';
+                });
+            }, 100);
+        }
+        
+        function closeProductModal() {
+            const modal = document.getElementById('product-detail-modal');
+            modal.style.display = 'none';
+        }
+        
+        function searchProducts(searchTerm) {
+            // In a real app, this would search through products
+            alert(`Searching for: ${searchTerm}`);
+            
+            // Show loading state
+            const productsGrid = document.getElementById('products-grid');
+            productsGrid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px;">Searching products...</div>';
+            
+            // Simulate search
+            setTimeout(() => {
+                const searchResults = document.getElementById('search-results');
+                const filtered = marketplaceData.products.filter(p => 
+                    p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                    p.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                    p.farmer.toLowerCase().includes(searchTerm.toLowerCase())
+                );
+                
+                if (filtered.length === 0) {
+                    productsGrid.innerHTML = `
+                        <div style="grid-column: 1/-1; text-align: center; padding: 40px;">
+                            <i class="fas fa-search" style="font-size: 3rem; color: var(--medium-gray); margin-bottom: 15px;"></i>
+                            <h3>No products found</h3>
+                            <p>Try different search terms or filters</p>
+                        </div>
+                    `;
+                } else {
+                    // Update products grid with filtered results
+                    marketplaceData.products = filtered;
+                    loadProducts();
+                }
+                
+                searchResults.textContent = `Found ${filtered.length} products for "${searchTerm}"`;
+            }, 1000);
+        }
+        
+        function logoutUser() {
+            // Clear session data
+            sessionStorage.removeItem('currentUser');
+            sessionStorage.removeItem('cart');
+            sessionStorage.removeItem('notificationCount');
+            
+            // Redirect to login page
+            window.location.href = 'index.html';
+        }
+        
+        function showNotification(message) {
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.className = 'notification-toast';
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: var(--primary-green);
+                color: white;
+                padding: 15px 20px;
+                border-radius: 8px;
+                box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+                z-index: 1000;
+                animation: slideIn 0.3s ease;
+                max-width: 300px;
+            `;
+            
+            notification.innerHTML = `
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <i class="fas fa-check-circle" style="font-size: 1.2rem;"></i>
+                    <span>${message}</span>
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Remove notification after 3 seconds
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.parentNode.removeChild(notification);
+                    }
+                }, 300);
+            }, 3000);
+        }
+    </script>
+</body>
+</html>

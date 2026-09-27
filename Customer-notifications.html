@@ -1,0 +1,1708 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notifications - Krishi Bazaar</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        /* Notifications Specific Styles */
+        .notifications-header {
+            background: linear-gradient(135deg, #2196F3, #0D47A1);
+            color: white;
+            padding: 40px;
+            border-radius: var(--border-radius);
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .notifications-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" opacity="0.1"><path d="M50,20 A30,30 0 1,1 20,50" fill="none" stroke="white" stroke-width="2"/><circle cx="50" cy="50" r="8" fill="white"/></svg>');
+            background-size: 100px;
+        }
+        
+        .notifications-content {
+            position: relative;
+            z-index: 2;
+        }
+        
+        .notification-stats {
+            display: flex;
+            gap: 40px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .notification-stat {
+            text-align: center;
+            min-width: 120px;
+        }
+        
+        .notification-stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            display: block;
+            line-height: 1;
+        }
+        
+        .notification-stat-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            margin-top: 5px;
+        }
+        
+        .notification-actions {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .notifications-container {
+            display: flex;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .notifications-sidebar {
+            width: 300px;
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 25px;
+            box-shadow: var(--shadow);
+            height: fit-content;
+            position: sticky;
+            top: 20px;
+        }
+        
+        .filter-section {
+            margin-bottom: 30px;
+        }
+        
+        .filter-section h3 {
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--medium-gray);
+            color: var(--text-dark);
+        }
+        
+        .filter-options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .filter-option {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .filter-option:hover {
+            background: var(--light-gray);
+        }
+        
+        .filter-option.active {
+            background: rgba(33, 150, 243, 0.1);
+            color: #2196F3;
+            font-weight: 500;
+        }
+        
+        .filter-option i {
+            width: 20px;
+            text-align: center;
+        }
+        
+        .filter-option .badge {
+            margin-left: auto;
+            background: var(--primary-green);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 0.8rem;
+        }
+        
+        .preferences-section {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid var(--medium-gray);
+        }
+        
+        .preference-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .notifications-main {
+            flex: 1;
+        }
+        
+        .notifications-list {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+        
+        .notifications-header-bar {
+            padding: 20px;
+            border-bottom: 1px solid var(--medium-gray);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .notifications-items {
+            max-height: 600px;
+            overflow-y: auto;
+        }
+        
+        .notification-item {
+            display: flex;
+            gap: 15px;
+            padding: 20px;
+            border-bottom: 1px solid var(--medium-gray);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .notification-item:hover {
+            background: rgba(33, 150, 243, 0.05);
+        }
+        
+        .notification-item.unread {
+            background: rgba(33, 150, 243, 0.08);
+        }
+        
+        .notification-item.unread::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: #2196F3;
+        }
+        
+        .notification-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+        
+        .notification-icon.order {
+            background: rgba(76, 175, 80, 0.1);
+            color: var(--primary-green);
+        }
+        
+        .notification-icon.message {
+            background: rgba(33, 150, 243, 0.1);
+            color: #2196F3;
+        }
+        
+        .notification-icon.system {
+            background: rgba(158, 158, 158, 0.1);
+            color: #9e9e9e;
+        }
+        
+        .notification-icon.payment {
+            background: rgba(255, 193, 7, 0.1);
+            color: var(--primary-yellow);
+        }
+        
+        .notification-icon.alert {
+            background: rgba(244, 67, 54, 0.1);
+            color: #F44336;
+        }
+        
+        .notification-content {
+            flex: 1;
+        }
+        
+        .notification-title {
+            font-weight: 500;
+            margin-bottom: 5px;
+            color: var(--text-dark);
+        }
+        
+        .notification-message {
+            color: var(--dark-gray);
+            margin-bottom: 8px;
+            line-height: 1.4;
+        }
+        
+        .notification-meta {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-size: 0.85rem;
+            color: var(--dark-gray);
+        }
+        
+        .notification-time {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .notification-actions-small {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .notification-action-btn {
+            padding: 5px 12px;
+            border: 1px solid #ddd;
+            background: white;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.3s ease;
+        }
+        
+        .notification-action-btn:hover {
+            background: var(--light-gray);
+        }
+        
+        .notification-action-btn.primary {
+            background: var(--primary-green);
+            color: white;
+            border-color: var(--primary-green);
+        }
+        
+        .notification-action-btn.primary:hover {
+            background: var(--dark-green);
+        }
+        
+        .empty-notifications {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--dark-gray);
+        }
+        
+        .empty-notifications i {
+            font-size: 4rem;
+            color: #e0e0e0;
+            margin-bottom: 20px;
+        }
+        
+        .notification-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: var(--primary-red);
+            color: white;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: 500;
+        }
+        
+        /* Toggle Switch */
+        .notification-toggle {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+        
+        .notification-toggle input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .notification-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 24px;
+        }
+        
+        .notification-slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .notification-slider {
+            background-color: var(--primary-green);
+        }
+        
+        input:checked + .notification-slider:before {
+            transform: translateX(26px);
+        }
+        
+        /* Notification Detail Modal */
+        .notification-detail-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            overflow-y: auto;
+            padding: 20px;
+        }
+        
+        .notification-detail-content {
+            background: white;
+            margin: 20px auto;
+            width: 100%;
+            max-width: 600px;
+            border-radius: var(--border-radius);
+            animation: modalSlide 0.3s ease;
+            position: relative;
+        }
+        
+        @keyframes modalSlide {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        .notification-detail-header {
+            padding: 25px;
+            border-bottom: 1px solid var(--medium-gray);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .close-detail {
+            background: none;
+            border: none;
+            font-size: 2rem;
+            cursor: pointer;
+            color: var(--dark-gray);
+            line-height: 1;
+        }
+        
+        .notification-detail-body {
+            padding: 25px;
+        }
+        
+        .detail-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .detail-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+        
+        .detail-title h2 {
+            margin-bottom: 5px;
+            color: var(--text-dark);
+        }
+        
+        .detail-title p {
+            color: var(--dark-gray);
+            font-size: 0.9rem;
+        }
+        
+        .detail-content {
+            margin: 25px 0;
+            padding: 20px;
+            background: var(--light-gray);
+            border-radius: var(--border-radius);
+            line-height: 1.6;
+        }
+        
+        .detail-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+        
+        /* Notification Types */
+        .type-indicator {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            margin-right: 10px;
+        }
+        
+        .type-order {
+            background: rgba(76, 175, 80, 0.1);
+            color: var(--primary-green);
+        }
+        
+        .type-message {
+            background: rgba(33, 150, 243, 0.1);
+            color: #2196F3;
+        }
+        
+        .type-system {
+            background: rgba(158, 158, 158, 0.1);
+            color: #9e9e9e;
+        }
+        
+        .type-payment {
+            background: rgba(255, 193, 7, 0.1);
+            color: var(--primary-yellow);
+        }
+        
+        .type-alert {
+            background: rgba(244, 67, 54, 0.1);
+            color: #F44336;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 992px) {
+            .notifications-container {
+                flex-direction: column;
+            }
+            
+            .notifications-sidebar {
+                width: 100%;
+                position: static;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .notifications-header {
+                padding: 30px 20px;
+            }
+            
+            .notification-stats {
+                gap: 20px;
+            }
+            
+            .notification-stat {
+                min-width: 100px;
+            }
+            
+            .notification-stat-number {
+                font-size: 2rem;
+            }
+            
+            .notification-actions {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .notification-actions button {
+                width: 100%;
+            }
+            
+            .notification-item {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .notification-meta {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 5px;
+            }
+            
+            .detail-actions {
+                flex-direction: column;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .notifications-header {
+                padding: 25px 15px;
+            }
+            
+            .notification-stat-number {
+                font-size: 1.5rem;
+            }
+            
+            .notification-header-bar {
+                flex-direction: column;
+                gap: 15px;
+                align-items: flex-start;
+            }
+            
+            .notification-detail-body {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2><i class="fas fa-seedling"></i> <span>Krishi Bazaar</span></h2>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="customer-dashboard.html" data-page="dashboard"><i class="fas fa-tachometer-alt"></i> <span>Dashboard</span></a></li>
+                    <li><a href="Customer-marketplace.html" data-page="marketplace"><i class="fas fa-store"></i> <span>Marketplace</span></a></li>
+                    <li><a href="Customer-myorders.html" data-page="orders"><i class="fas fa-shopping-cart"></i> <span>My Orders</span></a></li>
+                    <li><a href="Customer-messages.html" data-page="messages"><i class="fas fa-comments"></i> <span>Messages</span></a></li>
+                    <li><a href="Customer-mycart.html" data-page="cart"><i class="fas fa-shopping-bag"></i> <span>My Cart</span></a></li>
+                    <li><a href="Customer-nepalmap.html" data-page="map"><i class="fas fa-map"></i> <span>Nepal Map</span></a></li>
+                    <li><a href="Customer-myprofile.html" data-page="profile"><i class="fas fa-user"></i> <span>My Profile</span></a></li>
+                    <li><a href="Customer-notifications.html" class="active" data-page="notifications"><i class="fas fa-bell"></i> <span>Notifications</span></a></li>
+                </ul>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <div class="user-avatar" id="sidebar-avatar">AD</div>
+                    <div>
+                        <h4 id="sidebar-username">Avash Dhakal</h4>
+                        <p id="sidebar-role">Customer</p>
+                    </div>
+                </div>
+                <button class="btn-secondary logout-btn" id="logout-btn">Logout</button>
+            </div>
+        </aside>
+        
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Topbar -->
+            <div class="topbar">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="global-search" placeholder="Search notifications...">
+                </div>
+                <div class="topbar-actions">
+                    <div class="notification-icon-top">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-badge-top">12</span>
+                    </div>
+                    <div class="user-info">
+                        <div class="user-avatar" id="top-avatar">AD</div>
+                        <span id="top-username">Avash Dhakal</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Notifications Header -->
+            <div class="notifications-header">
+                <div class="notifications-content">
+                    <h1 class="page-title">Notifications</h1>
+                    <p class="page-subtitle">Stay updated with orders, messages, and platform updates</p>
+                    
+                    <div class="notification-stats">
+                        <div class="notification-stat">
+                            <span class="notification-stat-number" id="total-notifications">24</span>
+                            <span class="notification-stat-label">Total Notifications</span>
+                        </div>
+                        <div class="notification-stat">
+                            <span class="notification-stat-number" id="unread-notifications">12</span>
+                            <span class="notification-stat-label">Unread</span>
+                        </div>
+                        <div class="notification-stat">
+                            <span class="notification-stat-number" id="today-notifications">5</span>
+                            <span class="notification-stat-label">Today</span>
+                        </div>
+                        <div class="notification-stat">
+                            <span class="notification-stat-number" id="important-notifications">3</span>
+                            <span class="notification-stat-label">Important</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Notification Actions -->
+            <div class="notification-actions">
+                <button class="btn-primary" id="mark-all-read">
+                    <i class="fas fa-check-double"></i> Mark All as Read
+                </button>
+                <button class="btn-outline" id="clear-all">
+                    <i class="fas fa-trash"></i> Clear All
+                </button>
+                <button class="btn-outline" id="refresh-notifications">
+                    <i class="fas fa-sync-alt"></i> Refresh
+                </button>
+                <button class="btn-outline" id="notification-settings">
+                    <i class="fas fa-cog"></i> Settings
+                </button>
+            </div>
+            
+            <!-- Notifications Container -->
+            <div class="notifications-container">
+                <!-- Sidebar Filters -->
+                <div class="notifications-sidebar">
+                    <div class="filter-section">
+                        <h3>Filter by Type</h3>
+                        <div class="filter-options">
+                            <div class="filter-option active" data-type="all">
+                                <i class="fas fa-bell"></i>
+                                <span>All Notifications</span>
+                                <span class="badge" id="count-all">24</span>
+                            </div>
+                            <div class="filter-option" data-type="unread">
+                                <i class="fas fa-envelope"></i>
+                                <span>Unread</span>
+                                <span class="badge" id="count-unread">12</span>
+                            </div>
+                            <div class="filter-option" data-type="orders">
+                                <i class="fas fa-shopping-cart"></i>
+                                <span>Orders</span>
+                                <span class="badge" id="count-orders">8</span>
+                            </div>
+                            <div class="filter-option" data-type="messages">
+                                <i class="fas fa-comments"></i>
+                                <span>Messages</span>
+                                <span class="badge" id="count-messages">6</span>
+                            </div>
+                            <div class="filter-option" data-type="system">
+                                <i class="fas fa-cog"></i>
+                                <span>System</span>
+                                <span class="badge" id="count-system">4</span>
+                            </div>
+                            <div class="filter-option" data-type="payments">
+                                <i class="fas fa-rupee-sign"></i>
+                                <span>Payments</span>
+                                <span class="badge" id="count-payments">3</span>
+                            </div>
+                            <div class="filter-option" data-type="alerts">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                <span>Alerts</span>
+                                <span class="badge" id="count-alerts">3</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="filter-section">
+                        <h3>Filter by Time</h3>
+                        <div class="filter-options">
+                            <div class="filter-option" data-time="today">
+                                <i class="fas fa-calendar-day"></i>
+                                <span>Today</span>
+                            </div>
+                            <div class="filter-option" data-time="week">
+                                <i class="fas fa-calendar-week"></i>
+                                <span>This Week</span>
+                            </div>
+                            <div class="filter-option" data-time="month">
+                                <i class="fas fa-calendar-alt"></i>
+                                <span>This Month</span>
+                            </div>
+                            <div class="filter-option" data-time="older">
+                                <i class="fas fa-history"></i>
+                                <span>Older</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="preferences-section">
+                        <h3>Notification Preferences</h3>
+                        <div class="preference-item">
+                            <span>Email Notifications</span>
+                            <label class="notification-toggle">
+                                <input type="checkbox" id="email-toggle" checked>
+                                <span class="notification-slider"></span>
+                            </label>
+                        </div>
+                        <div class="preference-item">
+                            <span>Push Notifications</span>
+                            <label class="notification-toggle">
+                                <input type="checkbox" id="push-toggle" checked>
+                                <span class="notification-slider"></span>
+                            </label>
+                        </div>
+                        <div class="preference-item">
+                            <span>SMS Alerts</span>
+                            <label class="notification-toggle">
+                                <input type="checkbox" id="sms-toggle">
+                                <span class="notification-slider"></span>
+                            </label>
+                        </div>
+                        <div class="preference-item">
+                            <span>Order Updates</span>
+                            <label class="notification-toggle">
+                                <input type="checkbox" id="order-toggle" checked>
+                                <span class="notification-slider"></span>
+                            </label>
+                        </div>
+                        <div class="preference-item">
+                            <span>Message Alerts</span>
+                            <label class="notification-toggle">
+                                <input type="checkbox" id="message-toggle" checked>
+                                <span class="notification-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Main Notifications Area -->
+                <div class="notifications-main">
+                    <div class="notifications-list">
+                        <div class="notifications-header-bar">
+                            <h3>Recent Notifications</h3>
+                            <div class="header-actions">
+                                <button class="btn-outline" id="select-all-notifications">
+                                    <i class="fas fa-check-square"></i> Select All
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="notifications-items" id="notifications-list">
+                            <!-- Notifications will be loaded here by JavaScript -->
+                        </div>
+                        
+                        <!-- Empty State -->
+                        <div id="empty-notifications" class="empty-notifications" style="display: none;">
+                            <i class="fas fa-bell-slash"></i>
+                            <h3>No Notifications</h3>
+                            <p>You're all caught up! No new notifications at the moment.</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Load More Button -->
+                    <div style="text-align: center; margin-top: 20px;">
+                        <button class="btn-outline" id="load-more">
+                            <i class="fas fa-redo"></i> Load More Notifications
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- Notification Detail Modal -->
+    <div id="notification-detail-modal" class="notification-detail-modal">
+        <div class="notification-detail-content">
+            <div class="notification-detail-header">
+                <h2>Notification Details</h2>
+                <button class="close-detail">&times;</button>
+            </div>
+            <div class="notification-detail-body">
+                <div class="detail-header">
+                    <div class="detail-icon order" id="detail-icon">
+                        <i class="fas fa-shopping-cart"></i>
+                    </div>
+                    <div class="detail-title">
+                        <h2 id="detail-notification-title">New Order Received</h2>
+                        <p id="detail-notification-time">2 hours ago • <span class="type-order">Order</span></p>
+                    </div>
+                </div>
+                
+                <div class="detail-content" id="detail-notification-content">
+                    <p>You have received a new order for <strong>10kg of Organic Tomatoes</strong> from <strong>Binod Shrestha</strong>.</p>
+                    <p>Order Total: <strong>NPR 800</strong></p>
+                    <p>Delivery Address: Boudha, Kathmandu</p>
+                    <p>Preferred Delivery: Tomorrow, 10 AM - 12 PM</p>
+                </div>
+                
+                <div class="detail-actions">
+                    <button class="btn-primary" id="detail-action-primary">
+                        <i class="fas fa-check"></i> Accept Order
+                    </button>
+                    <button class="btn-outline" id="detail-action-secondary">
+                        <i class="fas fa-comment"></i> Message Customer
+                    </button>
+                    <button class="btn-outline" id="detail-action-tertiary">
+                        <i class="fas fa-times"></i> Decline
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Notifications JavaScript
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check login
+            const currentUser = JSON.parse(sessionStorage.getItem('currentUser'));
+            if (!currentUser) {
+                window.location.href = 'index.html';
+                return;
+            }
+            
+            // Initialize notifications
+            initNotifications(currentUser);
+            
+            // Load notifications
+            loadNotifications();
+            
+            // Setup event listeners
+            setupNotificationEventListeners();
+        });
+        
+        function initNotifications(user) {
+            // Update user info
+            updateUserInfo(user);
+            
+            // Update notification badge
+            updateNotificationBadge();
+        }
+        
+        function updateUserInfo(user) {
+            const avatarElements = document.querySelectorAll('.user-avatar');
+            const usernameElements = document.querySelectorAll('#sidebar-username, #top-username');
+            
+            const initials = user.name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
+            
+            avatarElements.forEach(el => {
+                el.textContent = initials;
+            });
+            
+            usernameElements.forEach(el => {
+                if (el) el.textContent = user.name;
+            });
+            
+            // Update sidebar role
+            const sidebarRole = document.getElementById('sidebar-role');
+            if (sidebarRole) {
+                sidebarRole.textContent = user.type === 'farmer' ? 'Farmer' : 'Customer';
+            }
+        }
+        
+        // Sample notifications data
+        let notificationsData = [
+            {
+                id: 1,
+                type: 'order',
+                title: 'New Order Received',
+                message: 'Binod Shrestha placed an order for 10kg Organic Tomatoes',
+                time: '2 hours ago',
+                timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+                read: false,
+                important: true,
+                icon: 'fas fa-shopping-cart',
+                color: 'order',
+                actions: ['accept', 'message', 'decline'],
+                details: {
+                    customer: 'Binod Shrestha',
+                    product: 'Organic Tomatoes',
+                    quantity: '10kg',
+                    total: 'NPR 800',
+                    address: 'Boudha, Kathmandu',
+                    delivery: 'Tomorrow, 10 AM - 12 PM'
+                }
+            },
+            {
+                id: 2,
+                type: 'message',
+                title: 'New Message',
+                message: 'Sunita Gurung sent you a message about product inquiry',
+                time: '4 hours ago',
+                timestamp: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(),
+                read: false,
+                important: false,
+                icon: 'fas fa-comments',
+                color: 'message',
+                actions: ['reply', 'view'],
+                details: {
+                    sender: 'Sunita Gurung',
+                    subject: 'Product Inquiry',
+                    preview: 'Hello, I\'m interested in your cauliflower. What\'s the minimum order quantity?'
+                }
+            },
+            {
+                id: 3,
+                type: 'payment',
+                title: 'Payment Received',
+                message: 'Payment of NPR 2,500 received for order #ORD-1023',
+                time: '1 day ago',
+                timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
+                read: true,
+                important: true,
+                icon: 'fas fa-rupee-sign',
+                color: 'payment',
+                actions: ['view', 'acknowledge'],
+                details: {
+                    amount: 'NPR 2,500',
+                    order: '#ORD-1023',
+                    method: 'Bank Transfer',
+                    date: 'Today, 10:30 AM'
+                }
+            },
+            {
+                id: 4,
+                type: 'system',
+                title: 'System Maintenance',
+                message: 'Platform maintenance scheduled for Sunday, 2 AM - 4 AM',
+                time: '1 day ago',
+                timestamp: new Date(Date.now() - 26 * 60 * 60 * 1000).toISOString(),
+                read: true,
+                important: false,
+                icon: 'fas fa-cog',
+                color: 'system',
+                actions: ['dismiss'],
+                details: {
+                    schedule: 'Sunday, 2 AM - 4 AM',
+                    impact: 'Platform will be temporarily unavailable',
+                    reason: 'System upgrades and performance improvements'
+                }
+            },
+            {
+                id: 5,
+                type: 'alert',
+                title: 'Low Stock Alert',
+                message: 'Green Peas stock is low (25kg remaining)',
+                time: '2 days ago',
+                timestamp: new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString(),
+                read: true,
+                important: true,
+                icon: 'fas fa-exclamation-triangle',
+                color: 'alert',
+                actions: ['restock', 'ignore'],
+                details: {
+                    product: 'Green Peas',
+                    currentStock: '25kg',
+                    threshold: '30kg',
+                    suggestion: 'Consider restocking soon'
+                }
+            },
+            {
+                id: 6,
+                type: 'order',
+                title: 'Order Delivered',
+                message: 'Order #ORD-1018 delivered successfully to Anita Sharma',
+                time: '3 days ago',
+                timestamp: new Date(Date.now() - 72 * 60 * 60 * 1000).toISOString(),
+                read: true,
+                important: false,
+                icon: 'fas fa-truck',
+                color: 'order',
+                actions: ['review', 'contact'],
+                details: {
+                    order: '#ORD-1018',
+                    customer: 'Anita Sharma',
+                    product: 'Cauliflower (5kg)',
+                    delivered: 'Yesterday, 3:45 PM',
+                    rating: '5 stars'
+                }
+            },
+            {
+                id: 7,
+                type: 'message',
+                title: 'Customer Feedback',
+                message: 'Rajesh Kumar left a 5-star rating for your service',
+                time: '4 days ago',
+                timestamp: new Date(Date.now() - 96 * 60 * 60 * 1000).toISOString(),
+                read: true,
+                important: false,
+                icon: 'fas fa-star',
+                color: 'message',
+                actions: ['thank', 'view'],
+                details: {
+                    customer: 'Rajesh Kumar',
+                    rating: '5 stars',
+                    comment: 'Excellent quality and timely delivery!',
+                    product: 'Organic Tomatoes'
+                }
+            },
+            {
+                id: 8,
+                type: 'system',
+                title: 'New Feature Available',
+                message: 'Bulk product editing is now available in your dashboard',
+                time: '5 days ago',
+                timestamp: new Date(Date.now() - 120 * 60 * 60 * 1000).toISOString(),
+                read: true,
+                important: false,
+                icon: 'fas fa-rocket',
+                color: 'system',
+                actions: ['try', 'learn'],
+                details: {
+                    feature: 'Bulk Product Editing',
+                    description: 'Edit multiple products at once with our new bulk editing tool',
+                    location: 'Products → Bulk Edit'
+                }
+            }
+        ];
+        
+        // Current filter state
+        const filterState = {
+            type: 'all',
+            time: 'all',
+            search: ''
+        };
+        
+        // Selected notifications
+        const selectedNotifications = new Set();
+        
+        function loadNotifications() {
+            const notificationsList = document.getElementById('notifications-list');
+            if (!notificationsList) return;
+            
+            // Clear list
+            notificationsList.innerHTML = '';
+            
+            // Apply filters
+            let filtered = notificationsData;
+            
+            // Type filter
+            if (filterState.type !== 'all') {
+                if (filterState.type === 'unread') {
+                    filtered = filtered.filter(n => !n.read);
+                } else {
+                    filtered = filtered.filter(n => n.type === filterState.type);
+                }
+            }
+            
+            // Time filter
+            if (filterState.time !== 'all') {
+                const now = new Date();
+                filtered = filtered.filter(n => {
+                    const notificationTime = new Date(n.timestamp);
+                    const diffHours = (now - notificationTime) / (1000 * 60 * 60);
+                    
+                    switch(filterState.time) {
+                        case 'today': return diffHours <= 24;
+                        case 'week': return diffHours <= 168; // 7 days
+                        case 'month': return diffHours <= 720; // 30 days
+                        case 'older': return diffHours > 720;
+                        default: return true;
+                    }
+                });
+            }
+            
+            // Search filter
+            if (filterState.search) {
+                const searchTerm = filterState.search.toLowerCase();
+                filtered = filtered.filter(n => 
+                    n.title.toLowerCase().includes(searchTerm) ||
+                    n.message.toLowerCase().includes(searchTerm) ||
+                    n.type.toLowerCase().includes(searchTerm)
+                );
+            }
+            
+            // Check if we have notifications to show
+            if (filtered.length === 0) {
+                showEmptyState();
+                return;
+            }
+            
+            hideEmptyState();
+            
+            // Add notifications to list
+            filtered.forEach(notification => {
+                const notificationItem = createNotificationItem(notification);
+                notificationsList.appendChild(notificationItem);
+            });
+            
+            // Update stats
+            updateNotificationStats();
+        }
+        
+        function createNotificationItem(notification) {
+            const item = document.createElement('div');
+            item.className = `notification-item ${notification.read ? '' : 'unread'}`;
+            item.setAttribute('data-notification-id', notification.id);
+            
+            // Time display
+            const timeText = formatTime(notification.timestamp);
+            
+            item.innerHTML = `
+                <div class="notification-icon ${notification.color}">
+                    <i class="${notification.icon}"></i>
+                </div>
+                <div class="notification-content">
+                    <div class="notification-title">
+                        ${notification.title}
+                        ${notification.important ? '<span class="type-indicator type-alert" style="margin-left: 5px;">Important</span>' : ''}
+                    </div>
+                    <div class="notification-message">${notification.message}</div>
+                    <div class="notification-meta">
+                        <div class="notification-time">
+                            <i class="far fa-clock"></i> ${timeText}
+                        </div>
+                        <span class="type-indicator type-${notification.type}">
+                            ${notification.type.charAt(0).toUpperCase() + notification.type.slice(1)}
+                        </span>
+                    </div>
+                    <div class="notification-actions-small">
+                        <button class="notification-action-btn" data-action="view" data-notification-id="${notification.id}">
+                            <i class="fas fa-eye"></i> View
+                        </button>
+                        ${!notification.read ? `
+                            <button class="notification-action-btn" data-action="mark-read" data-notification-id="${notification.id}">
+                                <i class="fas fa-check"></i> Mark Read
+                            </button>
+                        ` : ''}
+                        <button class="notification-action-btn" data-action="delete" data-notification-id="${notification.id}" style="color: var(--primary-red);">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
+                    </div>
+                </div>
+                ${!notification.read ? '<div class="notification-badge">!</div>' : ''}
+            `;
+            
+            // Add click event to view notification
+            item.addEventListener('click', function(e) {
+                if (!e.target.closest('.notification-action-btn')) {
+                    viewNotification(notification.id);
+                }
+            });
+            
+            return item;
+        }
+        
+        function formatTime(timestamp) {
+            const now = new Date();
+            const notificationTime = new Date(timestamp);
+            const diffMs = now - notificationTime;
+            const diffHours = diffMs / (1000 * 60 * 60);
+            
+            if (diffHours < 1) {
+                const diffMinutes = Math.floor(diffMs / (1000 * 60));
+                return `${diffMinutes} minute${diffMinutes !== 1 ? 's' : ''} ago`;
+            } else if (diffHours < 24) {
+                const hours = Math.floor(diffHours);
+                return `${hours} hour${hours !== 1 ? 's' : ''} ago`;
+            } else if (diffHours < 168) { // 7 days
+                const days = Math.floor(diffHours / 24);
+                return `${days} day${days !== 1 ? 's' : ''} ago`;
+            } else {
+                return notificationTime.toLocaleDateString('en-US', {
+                    month: 'short',
+                    day: 'numeric',
+                    year: 'numeric'
+                });
+            }
+        }
+        
+        function setupNotificationEventListeners() {
+            // Filter options
+            document.querySelectorAll('.filter-option[data-type]').forEach(option => {
+                option.addEventListener('click', function() {
+                    // Remove active class from all type options
+                    document.querySelectorAll('.filter-option[data-type]').forEach(opt => {
+                        opt.classList.remove('active');
+                    });
+                    
+                    // Add active class to clicked option
+                    this.classList.add('active');
+                    
+                    // Update filter state
+                    filterState.type = this.getAttribute('data-type');
+                    loadNotifications();
+                });
+            });
+            
+            document.querySelectorAll('.filter-option[data-time]').forEach(option => {
+                option.addEventListener('click', function() {
+                    // Remove active class from all time options
+                    document.querySelectorAll('.filter-option[data-time]').forEach(opt => {
+                        opt.classList.remove('active');
+                    });
+                    
+                    // Add active class to clicked option
+                    this.classList.add('active');
+                    
+                    // Update filter state
+                    filterState.time = this.getAttribute('data-time');
+                    loadNotifications();
+                });
+            });
+            
+            // Search functionality
+            const globalSearch = document.getElementById('global-search');
+            if (globalSearch) {
+                globalSearch.addEventListener('input', function() {
+                    filterState.search = this.value;
+                    loadNotifications();
+                });
+            }
+            
+            // Action buttons
+            const markAllReadBtn = document.getElementById('mark-all-read');
+            const clearAllBtn = document.getElementById('clear-all');
+            const refreshBtn = document.getElementById('refresh-notifications');
+            const settingsBtn = document.getElementById('notification-settings');
+            const loadMoreBtn = document.getElementById('load-more');
+            const selectAllBtn = document.getElementById('select-all-notifications');
+            
+            if (markAllReadBtn) {
+                markAllReadBtn.addEventListener('click', markAllAsRead);
+            }
+            
+            if (clearAllBtn) {
+                clearAllBtn.addEventListener('click', clearAllNotifications);
+            }
+            
+            if (refreshBtn) {
+                refreshBtn.addEventListener('click', refreshNotifications);
+            }
+            
+            if (settingsBtn) {
+                settingsBtn.addEventListener('click', openNotificationSettings);
+            }
+            
+            if (loadMoreBtn) {
+                loadMoreBtn.addEventListener('click', loadMoreNotifications);
+            }
+            
+            if (selectAllBtn) {
+                selectAllBtn.addEventListener('click', selectAllNotifications);
+            }
+            
+            // Modal close
+            const closeDetailBtn = document.querySelector('.close-detail');
+            const detailModal = document.getElementById('notification-detail-modal');
+            
+            if (closeDetailBtn) {
+                closeDetailBtn.addEventListener('click', function() {
+                    detailModal.style.display = 'none';
+                });
+            }
+            
+            // Close modal when clicking outside
+            window.addEventListener('click', function(event) {
+                if (event.target === detailModal) {
+                    detailModal.style.display = 'none';
+                }
+            });
+            
+            // Toggle switches
+            document.querySelectorAll('.notification-toggle input').forEach(toggle => {
+                toggle.addEventListener('change', function() {
+                    const preference = this.id.replace('-toggle', '');
+                    const enabled = this.checked;
+                    
+                    // In a real app, this would save to server
+                    console.log(`${preference} notifications: ${enabled ? 'enabled' : 'disabled'}`);
+                    
+                    // Show feedback
+                    if (this.checked) {
+                        showToast(`${preference.replace('-', ' ')} notifications enabled`);
+                    }
+                });
+            });
+            
+            // Add event delegation for notification action buttons
+            document.addEventListener('click', function(event) {
+                // View button
+                if (event.target.closest('[data-action="view"]')) {
+                    const btn = event.target.closest('[data-action="view"]');
+                    const notificationId = parseInt(btn.getAttribute('data-notification-id'));
+                    viewNotification(notificationId);
+                    event.stopPropagation();
+                }
+                
+                // Mark as read button
+                if (event.target.closest('[data-action="mark-read"]')) {
+                    const btn = event.target.closest('[data-action="mark-read"]');
+                    const notificationId = parseInt(btn.getAttribute('data-notification-id'));
+                    markAsRead(notificationId);
+                    event.stopPropagation();
+                }
+                
+                // Delete button
+                if (event.target.closest('[data-action="delete"]')) {
+                    const btn = event.target.closest('[data-action="delete"]');
+                    const notificationId = parseInt(btn.getAttribute('data-notification-id'));
+                    deleteNotification(notificationId);
+                    event.stopPropagation();
+                }
+            });
+            
+            // Detail modal action buttons
+            const detailActionPrimary = document.getElementById('detail-action-primary');
+            const detailActionSecondary = document.getElementById('detail-action-secondary');
+            const detailActionTertiary = document.getElementById('detail-action-tertiary');
+            
+            if (detailActionPrimary) {
+                detailActionPrimary.addEventListener('click', handleDetailAction);
+            }
+            
+            if (detailActionSecondary) {
+                detailActionSecondary.addEventListener('click', handleDetailAction);
+            }
+            
+            if (detailActionTertiary) {
+                detailActionTertiary.addEventListener('click', handleDetailAction);
+            }
+            
+            // Navigation links
+            document.querySelectorAll('.sidebar-nav a').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    if (this.getAttribute('data-page')) {
+                        e.preventDefault();
+                        navigateToPage(this.getAttribute('data-page'));
+                    }
+                });
+            });
+            
+            // Logout
+            const logoutBtn = document.getElementById('logout-btn');
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', function() {
+                    sessionStorage.clear();
+                    window.location.href = 'index.html';
+                });
+            }
+        }
+        
+        function updateNotificationStats() {
+            const total = notificationsData.length;
+            const unread = notificationsData.filter(n => !n.read).length;
+            const today = notificationsData.filter(n => {
+                const notificationTime = new Date(n.timestamp);
+                const diffHours = (new Date() - notificationTime) / (1000 * 60 * 60);
+                return diffHours <= 24;
+            }).length;
+            const important = notificationsData.filter(n => n.important).length;
+            
+            // Update header stats
+            document.getElementById('total-notifications').textContent = total;
+            document.getElementById('unread-notifications').textContent = unread;
+            document.getElementById('today-notifications').textContent = today;
+            document.getElementById('important-notifications').textContent = important;
+            
+            // Update filter badges
+            document.getElementById('count-all').textContent = total;
+            document.getElementById('count-unread').textContent = unread;
+            document.getElementById('count-orders').textContent = notificationsData.filter(n => n.type === 'order').length;
+            document.getElementById('count-messages').textContent = notificationsData.filter(n => n.type === 'message').length;
+            document.getElementById('count-system').textContent = notificationsData.filter(n => n.type === 'system').length;
+            document.getElementById('count-payments').textContent = notificationsData.filter(n => n.type === 'payment').length;
+            document.getElementById('count-alerts').textContent = notificationsData.filter(n => n.type === 'alert').length;
+            
+            // Update top bar badge
+            updateNotificationBadge();
+        }
+        
+        function updateNotificationBadge() {
+            const unreadCount = notificationsData.filter(n => !n.read).length;
+            const badge = document.querySelector('.notification-badge-top');
+            
+            if (badge) {
+                if (unreadCount > 0) {
+                    badge.textContent = unreadCount > 99 ? '99+' : unreadCount;
+                    badge.style.display = 'flex';
+                } else {
+                    badge.style.display = 'none';
+                }
+            }
+        }
+        
+        function viewNotification(notificationId) {
+            const notification = notificationsData.find(n => n.id === notificationId);
+            if (!notification) return;
+            
+            // Mark as read
+            if (!notification.read) {
+                notification.read = true;
+                loadNotifications();
+            }
+            
+            // Update modal content
+            const detailModal = document.getElementById('notification-detail-modal');
+            const detailIcon = document.getElementById('detail-icon');
+            const detailTitle = document.getElementById('detail-notification-title');
+            const detailTime = document.getElementById('detail-notification-time');
+            const detailContent = document.getElementById('detail-notification-content');
+            const detailActionPrimary = document.getElementById('detail-action-primary');
+            const detailActionSecondary = document.getElementById('detail-action-secondary');
+            const detailActionTertiary = document.getElementById('detail-action-tertiary');
+            
+            // Set icon
+            detailIcon.className = `detail-icon ${notification.color}`;
+            detailIcon.innerHTML = `<i class="${notification.icon}"></i>`;
+            
+            // Set title and time
+            detailTitle.textContent = notification.title;
+            detailTime.innerHTML = `${formatTime(notification.timestamp)} • <span class="type-${notification.type}">${notification.type.charAt(0).toUpperCase() + notification.type.slice(1)}</span>`;
+            
+            // Set content based on notification type
+            let contentHTML = '';
+            switch(notification.type) {
+                case 'order':
+                    contentHTML = `
+                        <p>You have received a new order for <strong>${notification.details.quantity} of ${notification.details.product}</strong> from <strong>${notification.details.customer}</strong>.</p>
+                        <p>Order Total: <strong>${notification.details.total}</strong></p>
+                        <p>Delivery Address: ${notification.details.address}</p>
+                        <p>Preferred Delivery: ${notification.details.delivery}</p>
+                    `;
+                    detailActionPrimary.innerHTML = '<i class="fas fa-check"></i> Accept Order';
+                    detailActionSecondary.innerHTML = '<i class="fas fa-comment"></i> Message Customer';
+                    detailActionTertiary.innerHTML = '<i class="fas fa-times"></i> Decline';
+                    break;
+                    
+                case 'message':
+                    contentHTML = `
+                        <p><strong>From:</strong> ${notification.details.sender}</p>
+                        <p><strong>Subject:</strong> ${notification.details.subject}</p>
+                        <p><strong>Message:</strong> ${notification.details.preview}</p>
+                    `;
+                    detailActionPrimary.innerHTML = '<i class="fas fa-reply"></i> Reply';
+                    detailActionSecondary.innerHTML = '<i class="fas fa-eye"></i> View Conversation';
+                    detailActionTertiary.innerHTML = '<i class="fas fa-archive"></i> Archive';
+                    break;
+                    
+                case 'payment':
+                    contentHTML = `
+                        <p><strong>Amount:</strong> ${notification.details.amount}</p>
+                        <p><strong>Order:</strong> ${notification.details.order}</p>
+                        <p><strong>Payment Method:</strong> ${notification.details.method}</p>
+                        <p><strong>Date:</strong> ${notification.details.date}</p>
+                    `;
+                    detailActionPrimary.innerHTML = '<i class="fas fa-eye"></i> View Details';
+                    detailActionSecondary.innerHTML = '<i class="fas fa-check"></i> Acknowledge';
+                    detailActionTertiary.innerHTML = '<i class="fas fa-print"></i> Print Receipt';
+                    break;
+                    
+                case 'alert':
+                    contentHTML = `
+                        <p><strong>Product:</strong> ${notification.details.product}</p>
+                        <p><strong>Current Stock:</strong> ${notification.details.currentStock}</p>
+                        <p><strong>Threshold:</strong> ${notification.details.threshold}</p>
+                        <p><strong>Suggestion:</strong> ${notification.details.suggestion}</p>
+                    `;
+                    detailActionPrimary.innerHTML = '<i class="fas fa-box"></i> Restock Now';
+                    detailActionSecondary.innerHTML = '<i class="fas fa-clock"></i> Remind Later';
+                    detailActionTertiary.innerHTML = '<i class="fas fa-times"></i> Ignore';
+                    break;
+                    
+                default:
+                    contentHTML = `<p>${notification.message}</p>`;
+                    if (notification.details) {
+                        for (const [key, value] of Object.entries(notification.details)) {
+                            contentHTML += `<p><strong>${key.charAt(0).toUpperCase() + key.slice(1)}:</strong> ${value}</p>`;
+                        }
+                    }
+                    detailActionPrimary.innerHTML = '<i class="fas fa-check"></i> OK';
+                    detailActionSecondary.innerHTML = '<i class="fas fa-ellipsis-h"></i> More';
+                    detailActionTertiary.innerHTML = '<i class="fas fa-times"></i> Dismiss';
+            }
+            
+            detailContent.innerHTML = contentHTML;
+            
+            // Show modal
+            detailModal.style.display = 'block';
+        }
+        
+        function handleDetailAction(event) {
+            const actionText = event.target.closest('button').textContent.trim();
+            const notificationId = currentViewingNotificationId; // This would be set when opening modal
+            
+            alert(`Action "${actionText}" would be performed.`);
+            
+            // Close modal
+            document.getElementById('notification-detail-modal').style.display = 'none';
+        }
+        
+        function markAsRead(notificationId) {
+            const notification = notificationsData.find(n => n.id === notificationId);
+            if (notification) {
+                notification.read = true;
+                loadNotifications();
+                showToast('Notification marked as read');
+            }
+        }
+        
+        function markAllAsRead() {
+            notificationsData.forEach(notification => {
+                notification.read = true;
+            });
+            loadNotifications();
+            showToast('All notifications marked as read');
+        }
+        
+        function deleteNotification(notificationId) {
+            if (confirm('Are you sure you want to delete this notification?')) {
+                notificationsData = notificationsData.filter(n => n.id !== notificationId);
+                loadNotifications();
+                showToast('Notification deleted');
+            }
+        }
+        
+        function clearAllNotifications() {
+            if (confirm('Are you sure you want to clear all notifications? This action cannot be undone.')) {
+                notificationsData = [];
+                loadNotifications();
+                showToast('All notifications cleared');
+            }
+        }
+        
+        function refreshNotifications() {
+            // In a real app, this would fetch new notifications from server
+            // For demo, just reload current notifications
+            loadNotifications();
+            showToast('Notifications refreshed');
+        }
+        
+        function openNotificationSettings() {
+            alert('Notification settings would open in a real application.\n\nYou can manage your notification preferences from the sidebar.');
+        }
+        
+        function loadMoreNotifications() {
+            // In a real app, this would load older notifications
+            // For demo, add some sample older notifications
+            const olderNotifications = [
+                {
+                    id: notificationsData.length + 1,
+                    type: 'system',
+                    title: 'Weekly Report',
+                    message: 'Your weekly sales report is ready for review',
+                    time: '1 week ago',
+                    timestamp: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
+                    read: true,
+                    important: false,
+                    icon: 'fas fa-chart-bar',
+                    color: 'system'
+                },
+                {
+                    id: notificationsData.length + 2,
+                    type: 'order',
+                    title: 'Order Completed',
+                    message: 'Order #ORD-1015 marked as completed',
+                    time: '1 week ago',
+                    timestamp: new Date(Date.now() - 7.5 * 24 * 60 * 60 * 1000).toISOString(),
+                    read: true,
+                    important: false,
+                    icon: 'fas fa-check-circle',
+                    color: 'order'
+                }
+            ];
+            
+            notificationsData.push(...olderNotifications);
+            loadNotifications();
+            showToast('Older notifications loaded');
+        }
+        
+        function selectAllNotifications() {
+            const checkboxes = document.querySelectorAll('.notification-checkbox');
+            const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+            
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = !allChecked;
+                const notificationId = parseInt(checkbox.getAttribute('data-notification-id'));
+                if (!allChecked) {
+                    selectedNotifications.add(notificationId);
+                } else {
+                    selectedNotifications.delete(notificationId);
+                }
+            });
+            
+            updateSelectedCount();
+        }
+        
+        function updateSelectedCount() {
+            // This would update a counter display
+            console.log(`${selectedNotifications.size} notifications selected`);
+        }
+        
+        function showEmptyState() {
+            document.getElementById('notifications-list').style.display = 'none';
+            document.getElementById('empty-notifications').style.display = 'block';
+        }
+        
+        function hideEmptyState() {
+            document.getElementById('notifications-list').style.display = 'block';
+            document.getElementById('empty-notifications').style.display = 'none';
+        }
+        
+        function showToast(message) {
+            // Create toast element
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.style.cssText = `
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                background: var(--primary-green);
+                color: white;
+                padding: 12px 20px;
+                border-radius: var(--border-radius);
+                box-shadow: var(--shadow);
+                z-index: 1000;
+                animation: slideIn 0.3s ease;
+            `;
+            
+            toast.innerHTML = `
+                <i class="fas fa-check-circle" style="margin-right: 8px;"></i>
+                ${message}
+            `;
+            
+            document.body.appendChild(toast);
+            
+            // Remove toast after 3 seconds
+            setTimeout(() => {
+                toast.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => {
+                    document.body.removeChild(toast);
+                }, 300);
+            }, 3000);
+            
+            // Add CSS for animations
+            if (!document.getElementById('toast-styles')) {
+                const style = document.createElement('style');
+                style.id = 'toast-styles';
+                style.textContent = `
+                    @keyframes slideIn {
+                        from { transform: translateX(100%); opacity: 0; }
+                        to { transform: translateX(0); opacity: 1; }
+                    }
+                    @keyframes slideOut {
+                        from { transform: translateX(0); opacity: 1; }
+                        to { transform: translateX(100%); opacity: 0; }
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+        }
+        
+        function navigateToPage(page) {
+            const currentUser = JSON.parse(sessionStorage.getItem('currentUser'));
+            const userType = currentUser?.type || 'customer';
+            
+            const pageMap = {
+                'dashboard': userType === 'farmer' ? 'farmer-dashboard.html' : 'customer-dashboard.html',
+                'products': 'product-listing.html',
+                'marketplace': 'mp.html',
+                'messages': 'messaging.html',
+                'map': 'nepal-map.html',
+                'profile': 'profile.html',
+                'notifications': 'notifications.html'
+            };
+            
+            if (pageMap[page]) {
+                window.location.href = pageMap[page];
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,1502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Messages - Krishi Bazaar</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        /* Messages Specific Styles */
+        .messages-header {
+            background: linear-gradient(135deg, #9C27B0, #6A1B9A);
+            color: white;
+            padding: 30px;
+            border-radius: var(--border-radius);
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .messages-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" opacity="0.1"><path d="M20,30 Q50,10 80,30 L80,70 Q50,90 20,70 Z" fill="white"/><circle cx="30" cy="50" r="8" fill="white"/><circle cx="50" cy="50" r="8" fill="white"/><circle cx="70" cy="50" r="8" fill="white"/></svg>');
+            background-size: 100px;
+        }
+        
+        .messages-container {
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 20px;
+            height: 70vh;
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+        
+        .conversations-list {
+            border-right: 1px solid var(--light-gray);
+            overflow-y: auto;
+        }
+        
+        .conversations-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--light-gray);
+        }
+        
+        .conversation-search {
+            position: relative;
+            margin-bottom: 15px;
+        }
+        
+        .conversation-search i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--dark-gray);
+        }
+        
+        .conversation-search input {
+            width: 100%;
+            padding: 10px 15px 10px 40px;
+            border: 1px solid var(--medium-gray);
+            border-radius: var(--border-radius);
+            font-size: 0.95rem;
+        }
+        
+        .conversation-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--light-gray);
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        
+        .conversation-item:hover {
+            background: var(--light-gray);
+        }
+        
+        .conversation-item.active {
+            background: rgba(76, 175, 80, 0.1);
+            border-left: 3px solid var(--primary-green);
+        }
+        
+        .conversation-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--primary-yellow);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: var(--text-dark);
+            flex-shrink: 0;
+        }
+        
+        .conversation-info {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .conversation-name {
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: var(--text-dark);
+        }
+        
+        .conversation-preview {
+            font-size: 0.9rem;
+            color: var(--dark-gray);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .conversation-meta {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 5px;
+        }
+        
+        .conversation-time {
+            font-size: 0.8rem;
+            color: var(--dark-gray);
+        }
+        
+        .unread-badge {
+            background: var(--primary-green);
+            color: white;
+            font-size: 0.7rem;
+            padding: 2px 6px;
+            border-radius: 10px;
+            min-width: 20px;
+            text-align: center;
+        }
+        
+        /* Chat Area */
+        .chat-area {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        
+        .chat-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--light-gray);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .chat-user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .chat-user-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--primary-yellow);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: var(--text-dark);
+        }
+        
+        .chat-user-details h3 {
+            margin-bottom: 5px;
+        }
+        
+        .chat-user-details p {
+            color: var(--dark-gray);
+            font-size: 0.9rem;
+        }
+        
+        .chat-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .chat-messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .message {
+            display: flex;
+            max-width: 70%;
+        }
+        
+        .message.received {
+            align-self: flex-start;
+        }
+        
+        .message.sent {
+            align-self: flex-end;
+            flex-direction: row-reverse;
+        }
+        
+        .message-avatar {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background: var(--light-gray);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        
+        .message-content {
+            margin: 0 10px;
+        }
+        
+        .message-bubble {
+            padding: 12px 15px;
+            border-radius: 18px;
+            position: relative;
+        }
+        
+        .message.received .message-bubble {
+            background: var(--light-gray);
+            color: var(--text-dark);
+            border-top-left-radius: 5px;
+        }
+        
+        .message.sent .message-bubble {
+            background: var(--primary-green);
+            color: white;
+            border-top-right-radius: 5px;
+        }
+        
+        .message-text {
+            margin-bottom: 5px;
+        }
+        
+        .message-time {
+            font-size: 0.75rem;
+            opacity: 0.8;
+            text-align: right;
+        }
+        
+        .chat-input-area {
+            padding: 20px;
+            border-top: 1px solid var(--light-gray);
+        }
+        
+        .chat-input-container {
+            display: flex;
+            gap: 10px;
+            align-items: flex-end;
+        }
+        
+        .chat-input {
+            flex: 1;
+            padding: 12px 15px;
+            border: 1px solid var(--medium-gray);
+            border-radius: var(--border-radius);
+            font-family: inherit;
+            font-size: 0.95rem;
+            resize: none;
+            max-height: 100px;
+            min-height: 50px;
+        }
+        
+        .chat-input:focus {
+            outline: none;
+            border-color: var(--primary-green);
+        }
+        
+        .chat-input-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .chat-input-btn {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: var(--primary-green);
+            color: white;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        
+        .chat-input-btn:hover {
+            background: #2E7D32;
+        }
+        
+        .no-conversation {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: var(--dark-gray);
+            text-align: center;
+            padding: 40px;
+        }
+        
+        .no-conversation i {
+            font-size: 4rem;
+            color: #e0e0e0;
+            margin-bottom: 20px;
+        }
+        
+        .message-product {
+            background: white;
+            border: 1px solid var(--light-gray);
+            border-radius: 10px;
+            padding: 10px;
+            margin-top: 10px;
+            max-width: 250px;
+        }
+        
+        .message-product img {
+            width: 100%;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 8px;
+            background: var(--light-gray);
+        }
+        
+        .message-product-info {
+            padding: 10px 0;
+        }
+        
+        .message-product-name {
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+        
+        .message-product-price {
+            color: var(--primary-green);
+            font-weight: 600;
+        }
+        
+        @media (max-width: 992px) {
+            .messages-container {
+                grid-template-columns: 1fr;
+                height: auto;
+            }
+            
+            .conversations-list {
+                border-right: none;
+                border-bottom: 1px solid var(--light-gray);
+                max-height: 300px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .messages-header {
+                padding: 20px;
+            }
+            
+            .chat-header {
+                flex-direction: column;
+                gap: 15px;
+                align-items: flex-start;
+            }
+            
+            .chat-actions {
+                width: 100%;
+                justify-content: space-between;
+            }
+            
+            .message {
+                max-width: 85%;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .message {
+                max-width: 90%;
+            }
+            
+            .conversation-item {
+                padding: 12px 15px;
+            }
+        }
+        
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 1000;
+            overflow-y: auto;
+            padding: 20px;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal.show {
+            display: flex !important;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            max-width: 600px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: modalSlideIn 0.3s ease;
+        }
+        
+        @keyframes modalSlideIn {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        
+        .modal-header {
+            padding: 25px;
+            border-bottom: 1px solid var(--light-gray);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .modal-header h2 {
+            margin: 0;
+            color: var(--text-dark);
+        }
+        
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 2rem;
+            cursor: pointer;
+            color: var(--dark-gray);
+            line-height: 1;
+            padding: 0;
+            width: 35px;
+            height: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: background 0.3s ease;
+        }
+        
+        .close-modal:hover {
+            background: var(--light-gray);
+        }
+        
+        .modal-body {
+            padding: 25px;
+        }
+        
+        .farmer-item {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .farmer-item:hover {
+            background: rgba(76, 175, 80, 0.1);
+            transform: translateX(5px);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2><i class="fas fa-seedling"></i> <span>Krishi Bazaar</span></h2>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="customer-dashboard.html" data-page="dashboard"><i class="fas fa-tachometer-alt"></i> <span>Dashboard</span></a></li>
+                    <li><a href="Customer-marketplace.html" data-page="marketplace"><i class="fas fa-store"></i> <span>Marketplace</span></a></li>
+                    <li><a href="Customer-myorders.html" data-page="orders"><i class="fas fa-shopping-cart"></i> <span>My Orders</span></a></li>
+                    <li><a href="Customer-messages.html" class="active" data-page="messages"><i class="fas fa-comments"></i> <span>Messages</span></a></li>
+                    <li><a href="Customer-mycart.html" data-page="cart"><i class="fas fa-shopping-basket"></i> <span>My Cart</span></a></li>
+                    <li><a href="Customer-nepalmap.html" data-page="map"><i class="fas fa-map"></i> <span>Nepal Map</span></a></li>
+                    <li><a href="Customer-myprofile.html" data-page="profile"><i class="fas fa-user"></i> <span>My Profile</span></a></li>
+                    <li><a href="Customer-notifications.html" data-page="notifications"><i class="fas fa-bell"></i> <span>Notifications</span></a></li>
+                </ul>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <div class="user-avatar" id="sidebar-avatar">AD</div>
+                    <div>
+                        <h4 id="sidebar-username">Avash Dhakal</h4>
+                        <p id="sidebar-role">Customer</p>
+                    </div>
+                </div>
+                <button class="btn-secondary logout-btn" id="logout-btn">Logout</button>
+            </div>
+        </aside>
+        
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Topbar -->
+            <div class="topbar">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="global-search" placeholder="Search messages...">
+                </div>
+                <div class="topbar-actions">
+                    <div class="notification-icon">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-badge" id="topbar-notification-count">5</span>
+                    </div>
+                    <div class="user-info">
+                        <div class="user-avatar" id="top-avatar">AD</div>
+                        <span id="top-username">Avash Dhakal</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Messages Header -->
+            <div class="messages-header">
+                <h1 class="page-title">Messages</h1>
+                <p>Communicate with farmers about products and orders</p>
+            </div>
+            
+            <!-- Messages Container -->
+            <div class="messages-container">
+                <!-- Conversations List -->
+                <div class="conversations-list">
+                    <div class="conversations-header">
+                        <h3>Conversations</h3>
+                        <div class="conversation-search">
+                            <i class="fas fa-search"></i>
+                            <input type="text" id="conversation-search" placeholder="Search conversations...">
+                        </div>
+                        <button class="btn-primary" id="new-conversation" style="width: 100%; margin-top: 15px;">
+                            <i class="fas fa-plus"></i> New Message
+                        </button>
+                    </div>
+                    
+                    <div id="conversations-list">
+                        <!-- Conversations will be loaded here -->
+                    </div>
+                </div>
+                
+                <!-- Chat Area -->
+                <div class="chat-area" id="chat-area">
+                    <!-- No conversation selected -->
+                    <div class="no-conversation" id="no-conversation">
+                        <div>
+                            <i class="fas fa-comments"></i>
+                            <h3>Select a conversation</h3>
+                            <p>Choose a conversation from the list or start a new one</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Active conversation (hidden by default) -->
+                    <div id="active-conversation" style="display: none;">
+                        <div class="chat-header">
+                            <div class="chat-user-info">
+                                <div class="chat-user-avatar" id="chat-user-avatar">RS</div>
+                                <div class="chat-user-details">
+                                    <h3 id="chat-user-name">Ram Shrestha</h3>
+                                    <p id="chat-user-status"><i class="fas fa-circle" style="color: #4CAF50; font-size: 0.8rem;"></i> Online</p>
+                                </div>
+                            </div>
+                            <div class="chat-actions">
+                                <button class="btn-outline" id="view-farmer-profile">
+                                    <i class="fas fa-user"></i> Profile
+                                </button>
+                                <button class="btn-outline" id="clear-chat">
+                                    <i class="fas fa-trash"></i> Clear
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="chat-messages" id="chat-messages">
+                            <!-- Messages will be loaded here -->
+                        </div>
+                        
+                        <div class="chat-input-area">
+                            <div class="chat-input-container">
+                                <textarea class="chat-input" id="message-input" placeholder="Type your message..."></textarea>
+                                <div class="chat-input-actions">
+                                    <button class="chat-input-btn" id="send-message">
+                                        <i class="fas fa-paper-plane"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- New Conversation Modal -->
+    <div id="new-conversation-modal" class="modal" style="display: none;">
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header">
+                <h2>New Message</h2>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="new-conversation-content">
+                    <div class="conversation-search" style="margin-bottom: 20px;">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="search-farmer" placeholder="Search farmers...">
+                    </div>
+                    
+                    <div id="farmers-list" style="max-height: 300px; overflow-y: auto;">
+                        <!-- Farmers will be loaded here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Messages JavaScript
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check login
+            const currentUser = JSON.parse(sessionStorage.getItem('currentUser'));
+            if (!currentUser) {
+                window.location.href = 'index.html';
+                return;
+            }
+            
+            // Initialize messages page
+            initMessagesPage(currentUser);
+            
+            // Load conversations
+            loadConversations();
+            
+            // Setup event listeners
+            setupMessagesEventListeners();
+        });
+        
+        function initMessagesPage(user) {
+            // Update user info
+            updateUserInfo(user);
+            
+            // Update notification badge
+            updateNotificationBadge();
+            
+            // Check for selected farmer from other pages
+            const selectedFarmer = JSON.parse(sessionStorage.getItem('selectedFarmer'));
+            if (selectedFarmer) {
+                // Find or create conversation with this farmer
+                startConversation(selectedFarmer);
+                sessionStorage.removeItem('selectedFarmer');
+            }
+        }
+        
+        function updateUserInfo(user) {
+            const avatarElements = document.querySelectorAll('.user-avatar');
+            const usernameElements = document.querySelectorAll('#sidebar-username, #top-username');
+            
+            const initials = user.name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
+            
+            avatarElements.forEach(el => {
+                el.textContent = initials;
+            });
+            
+            usernameElements.forEach(el => {
+                if (el) el.textContent = user.name;
+            });
+            
+            // Update sidebar role
+            const sidebarRole = document.getElementById('sidebar-role');
+            if (sidebarRole) {
+                sidebarRole.textContent = user.type === 'farmer' ? 'Farmer' : 'Customer';
+            }
+        }
+        
+        function updateNotificationBadge() {
+            const notificationCount = parseInt(sessionStorage.getItem('notificationCount') || '5');
+            const badge = document.getElementById('topbar-notification-count');
+            
+            if (badge) {
+                if (notificationCount > 0) {
+                    badge.textContent = notificationCount > 99 ? '99+' : notificationCount;
+                    badge.style.display = 'flex';
+                } else {
+                    badge.style.display = 'none';
+                }
+            }
+        }
+        
+        // Sample data for messages
+        const messagesData = {
+            conversations: [
+                {
+                    id: 1,
+                    farmerId: 1,
+                    farmerName: 'Ram Shrestha',
+                    lastMessage: 'The tomatoes will be delivered tomorrow morning.',
+                    lastTime: '10:30 AM',
+                    unread: 2,
+                    messages: [
+                        {
+                            id: 1,
+                            sender: 'farmer',
+                            text: 'Hello! I have fresh organic tomatoes available.',
+                            time: '10:00 AM',
+                            date: 'Today'
+                        },
+                        {
+                            id: 2,
+                            sender: 'user',
+                            text: 'Great! What\'s the price per kg?',
+                            time: '10:05 AM',
+                            date: 'Today'
+                        },
+                        {
+                            id: 3,
+                            sender: 'farmer',
+                            text: 'NPR 80 per kg. Minimum order 5kg.',
+                            time: '10:10 AM',
+                            date: 'Today'
+                        },
+                        {
+                            id: 4,
+                            sender: 'user',
+                            text: 'I\'ll take 10kg. When can you deliver?',
+                            time: '10:15 AM',
+                            date: 'Today'
+                        },
+                        {
+                            id: 5,
+                            sender: 'farmer',
+                            text: 'The tomatoes will be delivered tomorrow morning.',
+                            time: '10:30 AM',
+                            date: 'Today'
+                        }
+                    ]
+                },
+                {
+                    id: 2,
+                    farmerId: 2,
+                    farmerName: 'Sita Kumari',
+                    lastMessage: 'The mangoes are very sweet this season.',
+                    lastTime: 'Yesterday',
+                    unread: 0,
+                    messages: [
+                        {
+                            id: 1,
+                            sender: 'user',
+                            text: 'Are the mangoes organic?',
+                            time: '2:30 PM',
+                            date: 'Yesterday'
+                        },
+                        {
+                            id: 2,
+                            sender: 'farmer',
+                            text: 'Yes, completely organic. No pesticides used.',
+                            time: '2:45 PM',
+                            date: 'Yesterday'
+                        },
+                        {
+                            id: 3,
+                            sender: 'farmer',
+                            text: 'The mangoes are very sweet this season.',
+                            time: '3:00 PM',
+                            date: 'Yesterday'
+                        }
+                    ]
+                },
+                {
+                    id: 3,
+                    farmerId: 3,
+                    farmerName: 'Hari Prasad',
+                    lastMessage: 'Rice is available in both 5kg and 10kg packs.',
+                    lastTime: '2 days ago',
+                    unread: 0,
+                    messages: [
+                        {
+                            id: 1,
+                            sender: 'farmer',
+                            text: 'Hello! We have fresh basmati rice available.',
+                            time: '11:00 AM',
+                            date: '2 days ago'
+                        },
+                        {
+                            id: 2,
+                            sender: 'user',
+                            text: 'What pack sizes do you have?',
+                            time: '11:30 AM',
+                            date: '2 days ago'
+                        },
+                        {
+                            id: 3,
+                            sender: 'farmer',
+                            text: 'Rice is available in both 5kg and 10kg packs.',
+                            time: '12:00 PM',
+                            date: '2 days ago'
+                        }
+                    ]
+                }
+            ],
+            farmers: [
+                {
+                    id: 1,
+                    name: 'Ram Shrestha',
+                    location: 'Kathmandu',
+                    products: 'Vegetables',
+                    rating: 4.5
+                },
+                {
+                    id: 2,
+                    name: 'Sita Kumari',
+                    location: 'Pokhara',
+                    products: 'Fruits',
+                    rating: 4.8
+                },
+                {
+                    id: 3,
+                    name: 'Hari Prasad',
+                    location: 'Chitwan',
+                    products: 'Grains',
+                    rating: 4.2
+                },
+                {
+                    id: 4,
+                    name: 'Gopal Yadav',
+                    location: 'Kathmandu',
+                    products: 'Dairy',
+                    rating: 4.6
+                },
+                {
+                    id: 5,
+                    name: 'Bimal Karki',
+                    location: 'Biratnagar',
+                    products: 'Spices',
+                    rating: 4.3
+                }
+            ]
+        };
+        
+        let currentConversationId = null;
+        
+        function loadConversations() {
+            const currentUser = JSON.parse(sessionStorage.getItem('currentUser'));
+            if (!currentUser) return;
+            
+            const conversationsList = document.getElementById('conversations-list');
+            conversationsList.innerHTML = '<div style="padding: 20px; text-align: center;">Loading conversations...</div>';
+            
+            // Fetch conversations from database
+            fetch(`http://localhost:3000/api/messages/user/${currentUser.id}`)
+                .then(response => response.json())
+                .then(conversations => {
+                    conversationsList.innerHTML = '';
+                    
+                    // If no conversations from API, use sample data as fallback
+                    if (!conversations || conversations.length === 0) {
+                        console.log('No conversations from API, using sample data');
+                        renderConversations(messagesData.conversations);
+                        return;
+                    }
+                    
+                    // Update local messagesData with API data
+                    messagesData.conversations = conversations.map((conv, index) => ({
+                        id: index + 1,
+                        farmerId: conv.other_user_id,
+                        farmerName: conv.other_user_name,
+                        lastMessage: 'Click to view messages',
+                        lastTime: formatMessageDate(conv.last_message_time),
+                        unread: 0,
+                        messages: []
+                    }));
+                    
+                    renderConversations(messagesData.conversations);
+                })
+                .catch(error => {
+                    console.error('Error loading conversations:', error);
+                    // Use sample data as fallback on error
+                    console.log('API error, using sample data');
+                    renderConversations(messagesData.conversations);
+                });
+        }
+        
+        function renderConversations(conversations) {
+            const conversationsList = document.getElementById('conversations-list');
+            conversationsList.innerHTML = '';
+            
+            if (!conversations || conversations.length === 0) {
+                conversationsList.innerHTML = '<div style="padding: 20px; text-align: center; color: var(--dark-gray);">No conversations yet. Start a new one!</div>';
+                return;
+            }
+            
+            conversations.forEach(conversation => {
+                const conversationItem = document.createElement('div');
+                conversationItem.className = 'conversation-item';
+                conversationItem.setAttribute('data-conversation-id', conversation.id);
+                conversationItem.setAttribute('data-farmer-id', conversation.farmerId);
+                
+                const initials = conversation.farmerName.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
+                
+                conversationItem.innerHTML = `
+                    <div class="conversation-avatar">${initials}</div>
+                    <div class="conversation-info">
+                        <div class="conversation-name">${conversation.farmerName}</div>
+                        <div class="conversation-preview">${conversation.lastMessage}</div>
+                    </div>
+                    <div class="conversation-meta">
+                        <div class="conversation-time">${conversation.lastTime}</div>
+                        ${conversation.unread > 0 ? `<div class="unread-badge">${conversation.unread}</div>` : ''}
+                    </div>
+                `;
+                
+                conversationsList.appendChild(conversationItem);
+            });
+        }
+        
+        function setupMessagesEventListeners() {
+            // Notification icon click
+            const notificationIcon = document.querySelector('.notification-icon');
+            if (notificationIcon) {
+                notificationIcon.addEventListener('click', function() {
+                    window.location.href = 'Customer-notifications.html';
+                });
+                notificationIcon.style.cursor = 'pointer';
+            }
+            
+            // New conversation button
+            document.getElementById('new-conversation').addEventListener('click', function() {
+                showNewConversationModal();
+            });
+            
+            // Conversation search
+            document.getElementById('conversation-search').addEventListener('input', function() {
+                const searchTerm = this.value.trim().toLowerCase();
+                filterConversations(searchTerm);
+            });
+            
+            // Farmer search in modal
+            document.getElementById('search-farmer')?.addEventListener('input', function() {
+                const searchTerm = this.value.trim().toLowerCase();
+                filterFarmers(searchTerm);
+            });
+            
+            // Send message
+            document.getElementById('send-message')?.addEventListener('click', function() {
+                sendMessage();
+            });
+            
+            // Enter key to send message
+            document.getElementById('message-input')?.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    sendMessage();
+                }
+            });
+            
+            // View farmer profile
+            document.getElementById('view-farmer-profile')?.addEventListener('click', function() {
+                viewFarmerProfile();
+            });
+            
+            // Clear chat
+            document.getElementById('clear-chat')?.addEventListener('click', function() {
+                clearChat();
+            });
+            
+            // Global search
+            document.getElementById('global-search').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    const searchTerm = this.value.trim();
+                    if (searchTerm) {
+                        searchMessages(searchTerm);
+                    }
+                }
+            });
+            
+            // Logout button
+            document.getElementById('logout-btn').addEventListener('click', function() {
+                logoutUser();
+            });
+            
+            // Close modals
+            document.addEventListener('click', function(e) {
+                const modal = document.getElementById('new-conversation-modal');
+                // Close if clicking the X button
+                if (e.target.classList.contains('close-modal')) {
+                    closeModal('new-conversation-modal');
+                }
+                // Close if clicking outside the modal content (on the dark overlay)
+                if (e.target === modal) {
+                    closeModal('new-conversation-modal');
+                }
+            });
+            
+            // Event delegation for conversation items
+            document.addEventListener('click', function(e) {
+                if (e.target.closest('.conversation-item')) {
+                    const conversationItem = e.target.closest('.conversation-item');
+                    const conversationId = conversationItem.getAttribute('data-conversation-id');
+                    const farmerId = conversationItem.getAttribute('data-farmer-id');
+                    
+                    openConversation(conversationId, farmerId);
+                    
+                    // Mark as read
+                    const conversation = messagesData.conversations.find(c => c.id == conversationId);
+                    if (conversation) {
+                        conversation.unread = 0;
+                        loadConversations();
+                    }
+                }
+                
+                // Farmer selection in new conversation modal
+                if (e.target.closest('.farmer-item')) {
+                    const farmerItem = e.target.closest('.farmer-item');
+                    const farmerId = farmerItem.getAttribute('data-farmer-id');
+                    startConversationWithFarmer(farmerId);
+                }
+            });
+        }
+        
+        function filterConversations(searchTerm) {
+            const conversations = document.querySelectorAll('.conversation-item');
+            
+            conversations.forEach(conversation => {
+                const farmerName = conversation.querySelector('.conversation-name').textContent.toLowerCase();
+                const preview = conversation.querySelector('.conversation-preview').textContent.toLowerCase();
+                
+                if (farmerName.includes(searchTerm) || preview.includes(searchTerm)) {
+                    conversation.style.display = 'flex';
+                } else {
+                    conversation.style.display = 'none';
+                }
+            });
+        }
+        
+        function openConversation(conversationId, farmerId) {
+            currentConversationId = conversationId;
+            
+            const conversation = messagesData.conversations.find(c => c.id == conversationId);
+            const currentUser = JSON.parse(sessionStorage.getItem('currentUser'));
+            
+            if (!conversation || !currentUser) return;
+            
+            // Get farmer info - either from local cache or from conversation
+            let farmer = messagesData.farmers.find(f => f.id == farmerId);
+            if (!farmer) {
+                // If farmer not in cache, create basic info from conversation
+                farmer = {
+                    id: farmerId,
+                    name: conversation.farmerName,
+                    location: 'Location',
+                    products: 'Products',
+                    rating: 0
+                };
+                messagesData.farmers.push(farmer);
+            }
+            
+            // Update UI to show conversation
+            document.getElementById('no-conversation').style.display = 'none';
+            document.getElementById('active-conversation').style.display = 'flex';
+            
+            // Update conversation header
+            document.getElementById('chat-user-avatar').textContent = 
+                farmer.name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
+            document.getElementById('chat-user-name').textContent = farmer.name;
+            
+            // Load messages from database
+            fetch(`http://localhost:3000/api/messages/conversation/${currentUser.id}/${farmerId}`)
+                .then(response => response.json())
+                .then(messages => {
+                    // Convert database messages to our format
+                    const formattedMessages = messages.map(msg => ({
+                        id: msg.id,
+                        sender: msg.sender_id == currentUser.id ? 'user' : 'farmer',
+                        text: msg.message,
+                        time: new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                        date: formatMessageDate(msg.created_at)
+                    }));
+                    
+                    conversation.messages = formattedMessages;
+                    loadMessages(formattedMessages);
+                    
+                    // Scroll to bottom
+                    setTimeout(() => {
+                        const chatMessages = document.getElementById('chat-messages');
+                        chatMessages.scrollTop = chatMessages.scrollHeight;
+                    }, 100);
+                })
+                .catch(error => {
+                    console.error('Error loading messages:', error);
+                    loadMessages(conversation.messages || []);
+                });
+            
+            // Mark conversation as active
+            document.querySelectorAll('.conversation-item').forEach(item => {
+                item.classList.remove('active');
+                if (item.getAttribute('data-conversation-id') == conversationId) {
+                    item.classList.add('active');
+                }
+            });
+        }
+        
+        function formatMessageDate(dateString) {
+            const messageDate = new Date(dateString);
+            const today = new Date();
+            const yesterday = new Date(today);
+            yesterday.setDate(yesterday.getDate() - 1);
+            
+            if (messageDate.toDateString() === today.toDateString()) {
+                return 'Today';
+            } else if (messageDate.toDateString() === yesterday.toDateString()) {
+                return 'Yesterday';
+            } else {
+                return messageDate.toLocaleDateString();
+            }
+        }
+        
+        function loadMessages(messages) {
+            const chatMessages = document.getElementById('chat-messages');
+            chatMessages.innerHTML = '';
+            
+            let currentDate = '';
+            
+            messages.forEach(message => {
+                // Add date separator if date changed
+                if (message.date !== currentDate) {
+                    currentDate = message.date;
+                    const dateSeparator = document.createElement('div');
+                    dateSeparator.className = 'date-separator';
+                    dateSeparator.style.cssText = `
+                        text-align: center;
+                        margin: 15px 0;
+                        color: var(--dark-gray);
+                        font-size: 0.8rem;
+                        position: relative;
+                    `;
+                    dateSeparator.innerHTML = `
+                        <span style="background: white; padding: 0 10px; position: relative; z-index: 1;">${message.date}</span>
+                        <div style="position: absolute; top: 50%; left: 0; right: 0; height: 1px; background: var(--light-gray); z-index: 0;"></div>
+                    `;
+                    chatMessages.appendChild(dateSeparator);
+                }
+                
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `message ${message.sender === 'user' ? 'sent' : 'received'}`;
+                
+                const avatarContent = message.sender === 'user' ? 
+                    document.getElementById('sidebar-avatar').textContent :
+                    document.getElementById('chat-user-avatar').textContent;
+                
+                messageDiv.innerHTML = `
+                    <div class="message-avatar">${avatarContent}</div>
+                    <div class="message-content">
+                        <div class="message-bubble">
+                            <div class="message-text">${message.text}</div>
+                            <div class="message-time">${message.time}</div>
+                        </div>
+                    </div>
+                `;
+                
+                chatMessages.appendChild(messageDiv);
+            });
+        }
+        
+        function sendMessage() {
+            const messageInput = document.getElementById('message-input');
+            const messageText = messageInput.value.trim();
+            
+            if (!messageText || !currentConversationId) return;
+            
+            const currentUser = JSON.parse(sessionStorage.getItem('currentUser'));
+            const conversation = messagesData.conversations.find(c => c.id == currentConversationId);
+            
+            if (!conversation || !currentUser) return;
+            
+            // Save message to database
+            fetch('http://localhost:3000/api/messages', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    senderId: currentUser.id,
+                    receiverId: conversation.farmerId,
+                    message: messageText
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Add message to local data
+                    const newMessage = {
+                        id: data.messageId,
+                        sender: 'user',
+                        text: messageText,
+                        time: getCurrentTime(),
+                        date: 'Today'
+                    };
+                    
+                    conversation.messages.push(newMessage);
+                    conversation.lastMessage = messageText;
+                    conversation.lastTime = 'Just now';
+                    
+                    // Update UI
+                    loadMessages(conversation.messages);
+                    loadConversations();
+                    
+                    // Clear input
+                    messageInput.value = '';
+                    
+                    // Scroll to bottom
+                    const chatMessages = document.getElementById('chat-messages');
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                } else {
+                    alert('Failed to send message: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error sending message:', error);
+                alert('Failed to send message. Make sure server is running.');
+            });
+        }
+        
+        function getCurrentTime() {
+            const now = new Date();
+            return now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        }
+        
+        function showNewConversationModal() {
+            const modal = document.getElementById('new-conversation-modal');
+            const farmersList = document.getElementById('farmers-list');
+            
+            // Load farmers list from database
+            farmersList.innerHTML = '<div style="padding: 20px; text-align: center;">Loading farmers...</div>';
+            
+            fetch('http://localhost:3000/api/farmers')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success && data.farmers) {
+                        farmersList.innerHTML = '';
+                        
+                        if (data.farmers.length === 0) {
+                            farmersList.innerHTML = '<div style="padding: 20px; text-align: center; color: var(--dark-gray);">No farmers found</div>';
+                            return;
+                        }
+                        
+                        data.farmers.forEach(farmer => {
+                            const farmerItem = document.createElement('div');
+                            farmerItem.className = 'conversation-item farmer-item';
+                            farmerItem.setAttribute('data-farmer-id', farmer.id);
+                            
+                            const initials = farmer.name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
+                            
+                            farmerItem.innerHTML = `
+                                <div class="conversation-avatar">${initials}</div>
+                                <div class="conversation-info">
+                                    <div class="conversation-name">${farmer.name}</div>
+                                    <div class="conversation-preview">${farmer.location}</div>
+                                </div>
+                                <div class="conversation-meta">
+                                    <div style="color: var(--primary-green);">
+                                        <i class="fas fa-seedling"></i> Farmer
+                                    </div>
+                                </div>
+                            `;
+                            
+                            farmersList.appendChild(farmerItem);
+                        });
+                    } else {
+                        farmersList.innerHTML = '<div style="padding: 20px; text-align: center; color: var(--primary-red);">Failed to load farmers</div>';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading farmers:', error);
+                    // Use sample data as fallback
+                    farmersList.innerHTML = '';
+                    messagesData.farmers.forEach(farmer => {
+                        const farmerItem = document.createElement('div');
+                        farmerItem.className = 'conversation-item farmer-item';
+                        farmerItem.setAttribute('data-farmer-id', farmer.id);
+                        
+                        const initials = farmer.name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
+                        
+                        farmerItem.innerHTML = `
+                            <div class="conversation-avatar">${initials}</div>
+                            <div class="conversation-info">
+                                <div class="conversation-name">${farmer.name}</div>
+                                <div class="conversation-preview">${farmer.location} • ${farmer.products}</div>
+                            </div>
+                            <div class="conversation-meta">
+                                <div style="color: var(--primary-green); font-size: 0.85rem;">
+                                    <i class="fas fa-seedling"></i> Farmer
+                                </div>
+                            </div>
+                        `;
+                        
+                        farmersList.appendChild(farmerItem);
+                    });
+                });
+            
+            modal.style.display = 'flex';
+            modal.classList.add('show');
+        }
+        
+        function filterFarmers(searchTerm) {
+            const farmers = document.querySelectorAll('.farmer-item');
+            
+            farmers.forEach(farmer => {
+                const farmerName = farmer.querySelector('.conversation-name').textContent.toLowerCase();
+                const preview = farmer.querySelector('.conversation-preview').textContent.toLowerCase();
+                
+                if (farmerName.includes(searchTerm) || preview.includes(searchTerm)) {
+                    farmer.style.display = 'flex';
+                } else {
+                    farmer.style.display = 'none';
+                }
+            });
+        }
+        
+        function startConversationWithFarmer(farmerId) {
+            const currentUser = JSON.parse(sessionStorage.getItem('currentUser'));
+            if (!currentUser) return;
+            
+            // Get farmer info from the clicked element
+            const farmerItem = document.querySelector(`.farmer-item[data-farmer-id="${farmerId}"]`);
+            if (!farmerItem) return;
+            
+            const farmerName = farmerItem.querySelector('.conversation-name').textContent;
+            const farmerLocation = farmerItem.querySelector('.conversation-preview').textContent;
+            
+            // Send initial message to database
+            const initialMessage = `Hello ${farmerName}! I'm interested in your products.`;
+            
+            fetch('http://localhost:3000/api/messages', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    senderId: currentUser.id,
+                    receiverId: farmerId,
+                    message: initialMessage
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Create local conversation object
+                    let conversation = messagesData.conversations.find(c => c.farmerId == farmerId);
+                    
+                    if (!conversation) {
+                        conversation = {
+                            id: messagesData.conversations.length + 1,
+                            farmerId: farmerId,
+                            farmerName: farmerName,
+                            lastMessage: initialMessage,
+                            lastTime: 'Just now',
+                            unread: 0,
+                            messages: []
+                        };
+                        
+                        messagesData.conversations.push(conversation);
+                        
+                        // Add farmer to local farmers list if not exists
+                        if (!messagesData.farmers.find(f => f.id == farmerId)) {
+                            messagesData.farmers.push({
+                                id: farmerId,
+                                name: farmerName,
+                                location: farmerLocation,
+                                products: 'Products',
+                                rating: 0
+                            });
+                        }
+                    }
+                    
+                    // Close modal and open conversation
+                    closeModal('new-conversation-modal');
+                    openConversation(conversation.id, farmerId);
+                    loadConversations();
+                } else {
+                    alert('Failed to start conversation: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error starting conversation:', error);
+                alert('Failed to start conversation. Make sure server is running.');
+            });
+        }
+        
+        function startConversation(farmerData) {
+            // Similar to startConversationWithFarmer but using farmer data
+            let conversation = messagesData.conversations.find(c => c.farmerName === farmerData.name);
+            
+            if (!conversation) {
+                conversation = {
+                    id: messagesData.conversations.length + 1,
+                    farmerId: messagesData.farmers.length + 1,
+                    farmerName: farmerData.name,
+                    lastMessage: 'New conversation started',
+                    lastTime: 'Just now',
+                    unread: 0,
+                    messages: [
+                        {
+                            id: 1,
+                            sender: 'user',
+                            text: `Hello ${farmerData.name}! I'm interested in your products.`,
+                            time: getCurrentTime(),
+                            date: 'Today'
+                        }
+                    ]
+                };
+                
+                messagesData.conversations.push(conversation);
+                
+                // Also add to farmers list if not exists
+                if (!messagesData.farmers.some(f => f.name === farmerData.name)) {
+                    messagesData.farmers.push({
+                        id: messagesData.farmers.length + 1,
+                        name: farmerData.name,
+                        location: farmerData.location || 'Unknown',
+                        products: 'Various',
+                        rating: 4.0
+                    });
+                }
+            }
+            
+            openConversation(conversation.id, conversation.farmerId);
+            loadConversations();
+        }
+        
+        function viewFarmerProfile() {
+            if (!currentConversationId) return;
+            
+            const conversation = messagesData.conversations.find(c => c.id == currentConversationId);
+            if (conversation) {
+                const farmer = messagesData.farmers.find(f => f.id == conversation.farmerId);
+                if (farmer) {
+                    alert(`Farmer Profile:\n\nName: ${farmer.name}\nLocation: ${farmer.location}\nProducts: ${farmer.products}\nRating: ${farmer.rating}/5`);
+                }
+            }
+        }
+        
+        function clearChat() {
+            if (!currentConversationId || !confirm('Are you sure you want to clear this chat?')) return;
+            
+            const conversation = messagesData.conversations.find(c => c.id == currentConversationId);
+            if (conversation) {
+                conversation.messages = [];
+                conversation.lastMessage = 'Chat cleared';
+                conversation.lastTime = 'Just now';
+                
+                loadMessages([]);
+                loadConversations();
+            }
+        }
+        
+        function searchMessages(searchTerm) {
+            alert(`Searching for: ${searchTerm}\n\nThis would search through all messages.`);
+        }
+        
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            modal.style.display = 'none';
+            modal.classList.remove('show');
+        }
+        
+        function logoutUser() {
+            // Clear session data
+            sessionStorage.removeItem('currentUser');
+            sessionStorage.removeItem('notificationCount');
+            sessionStorage.removeItem('selectedFarmer');
+            
+            // Redirect to login page
+            window.location.href = 'index.html';
+        }
+    </script>
+</body>
+</html>

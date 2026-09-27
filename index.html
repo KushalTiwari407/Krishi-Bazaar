@@ -1,0 +1,877 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Krishi Bazaar - Nepal's Agricultural Marketplace</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        /* Additional styles for login page */
+        .login-container {
+            animation: fadeIn 0.8s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .password-wrapper {
+            position: relative;
+        }
+        
+        .password-toggle {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--dark-gray);
+            cursor: pointer;
+        }
+        
+        .error-message {
+            color: var(--primary-red);
+            font-size: 0.85rem;
+            margin-top: 5px;
+            display: none;
+        }
+        
+        .district-other {
+            margin-top: 10px;
+            display: none;
+        }
+        
+        .district-other input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            font-size: 16px;
+        }
+        
+        .login-features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin: 40px auto;
+            max-width: 1200px;
+        }
+        
+        .feature {
+            text-align: center;
+            padding: 25px;
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            transition: transform 0.3s ease;
+        }
+        
+        .feature:hover {
+            transform: translateY(-5px);
+        }
+        
+        .feature i {
+            font-size: 2.5rem;
+            color: var(--primary-green);
+            margin-bottom: 15px;
+        }
+        
+        .feature h3 {
+            margin-bottom: 10px;
+            color: var(--text-dark);
+        }
+        
+        .feature p {
+            color: var(--dark-gray);
+            font-size: 0.95rem;
+        }
+        
+        .language-selector {
+            text-align: center;
+            margin: 20px 0;
+            color: var(--dark-gray);
+        }
+        
+        .language-selector select {
+            padding: 8px 15px;
+            border: 1px solid var(--medium-gray);
+            border-radius: var(--border-radius);
+            background: white;
+            margin-left: 10px;
+        }
+        
+        .login-footer {
+            text-align: center;
+            padding: 20px;
+            color: var(--dark-gray);
+            border-top: 1px solid var(--light-gray);
+            margin-top: 40px;
+        }
+        
+        .login-footer a {
+            color: var(--primary-green);
+            text-decoration: none;
+        }
+        
+        .login-footer a:hover {
+            text-decoration: underline;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .login-features {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .feature {
+                padding: 20px;
+            }
+            
+            .login-footer p {
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <!-- Login Header -->
+        <div class="login-header">
+            <div class="logo">
+                <i class="fas fa-seedling"></i>
+                <h1>Krishi Bazaar</h1>
+            </div>
+            <p class="tagline">Connecting Nepali Farmers Directly with Buyers</p>
+        </div>
+        
+        <!-- Login Card -->
+        <div class="login-card">
+            <div class="login-tabs">
+                <button class="tab-btn active" id="login-tab" data-tab="login">Login</button>
+                <button class="tab-btn" id="register-tab" data-tab="register">Register</button>
+            </div>
+            
+            <!-- Login Form -->
+            <div class="login-form active" id="login-form">
+                <h2>Welcome Back</h2>
+                <p class="form-subtitle">Sign in to your account</p>
+                
+                <div class="form-group">
+                    <label for="login-email">Email or Phone Number</label>
+                    <input type="text" id="login-email" placeholder="Enter email or phone" required>
+                    <div class="error-message" id="login-email-error"></div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="login-password">Password</label>
+                    <div class="password-wrapper">
+                        <input type="password" id="login-password" placeholder="Enter password" required>
+                        <button type="button" class="password-toggle" id="login-password-toggle">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                    <div class="error-message" id="login-password-error"></div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="user-type">I am a:</label>
+                    <select id="user-type" required>
+                        <option value="">Select user type</option>
+                        <option value="farmer">Farmer/Grower</option>
+                        <option value="customer">Customer/Retailer</option>
+                    </select>
+                    <div class="error-message" id="user-type-error"></div>
+                </div>
+                
+                <button class="btn-primary" id="login-btn">Login</button>
+                
+                <div class="form-footer">
+                    <a href="#" class="forgot-link" id="forgot-password">Forgot password?</a>
+                    <p>Don't have an account? <a href="#" id="switch-to-register">Register here</a></p>
+                </div>
+            </div>
+            
+            <!-- Register Form -->
+            <div class="login-form" id="register-form">
+                <h2>Create Account</h2>
+                <p class="form-subtitle">Join our agricultural community</p>
+                
+                <div class="form-group">
+                    <label for="register-name">Full Name *</label>
+                    <input type="text" id="register-name" placeholder="Enter your full name" required>
+                    <div class="error-message" id="register-name-error"></div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="register-email">Email Address *</label>
+                    <input type="email" id="register-email" placeholder="Enter your email" required>
+                    <div class="error-message" id="register-email-error"></div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="register-phone">Phone Number *</label>
+                    <input type="tel" id="register-phone" placeholder="98XXXXXXXX" pattern="[0-9]{10}" required>
+                    <div class="error-message" id="register-phone-error"></div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="register-password">Password *</label>
+                    <div class="password-wrapper">
+                        <input type="password" id="register-password" placeholder="Create password (min. 6 characters)" minlength="6" required>
+                        <button type="button" class="password-toggle" id="register-password-toggle">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                    <div class="error-message" id="register-password-error"></div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="register-confirm-password">Confirm Password *</label>
+                    <div class="password-wrapper">
+                        <input type="password" id="register-confirm-password" placeholder="Confirm password" required>
+                        <button type="button" class="password-toggle" id="register-confirm-password-toggle">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                    <div class="error-message" id="register-confirm-password-error"></div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="register-type">I want to: *</label>
+                    <select id="register-type" required>
+                        <option value="">Select account type</option>
+                        <option value="farmer">Sell agricultural products</option>
+                        <option value="customer">Buy agricultural products</option>
+                    </select>
+                    <div class="error-message" id="register-type-error"></div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="register-location">Location (District) *</label>
+                    <select id="register-location" required>
+                        <option value="">Select your district</option>
+                        <option value="kathmandu">Kathmandu</option>
+                        <option value="lalitpur">Lalitpur</option>
+                        <option value="bhaktapur">Bhaktapur</option>
+                        <option value="pokhara">Pokhara (Kaski)</option>
+                        <option value="chitwan">Chitwan</option>
+                        <option value="kaski">Kaski</option>
+                        <option value="morang">Morang</option>
+                        <option value="jhapa">Jhapa</option>
+                        <option value="sunsari">Sunsari</option>
+                        <option value="other">Other District</option>
+                    </select>
+                    <div class="error-message" id="register-location-error"></div>
+                </div>
+                
+                <div id="district-other-container" class="district-other">
+                    <input type="text" id="register-other-district" placeholder="Enter your district name">
+                    <div class="error-message" id="register-other-district-error"></div>
+                </div>
+                
+                <div class="form-group">
+                    <input type="checkbox" id="terms-agreement" required>
+                    <label for="terms-agreement" style="display: inline; font-weight: normal;">
+                        I agree to the <a href="#" style="display: inline;">Terms of Service</a> and <a href="#" style="display: inline;">Privacy Policy</a> *
+                    </label>
+                    <div class="error-message" id="terms-agreement-error"></div>
+                </div>
+                
+                <button class="btn-primary" id="register-btn">Create Account</button>
+                
+                <div class="form-footer">
+                    <p>Already have an account? <a href="#" id="switch-to-login">Login here</a></p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Features Section -->
+        <div class="login-features">
+            <div class="feature">
+                <i class="fas fa-handshake"></i>
+                <h3>Direct Connection</h3>
+                <p>Connect directly with farmers or buyers</p>
+            </div>
+            <div class="feature">
+                <i class="fas fa-map-marker-alt"></i>
+                <h3>Local Focus</h3>
+                <p>Find products and farmers in your district</p>
+            </div>
+            <div class="feature">
+                <i class="fas fa-comments"></i>
+                <h3>Direct Messaging</h3>
+                <p>Communicate directly with no AI intermediaries</p>
+            </div>
+            <div class="feature">
+                <i class="fas fa-rupee-sign"></i>
+                <h3>Fair Pricing</h3>
+                <p>Transparent prices in Nepali Rupees (NPR)</p>
+            </div>
+        </div>
+        
+        <!-- Language Selector -->
+        <div class="language-selector">
+            <span><i class="fas fa-language"></i> Language:</span>
+            <select id="language-select">
+                <option value="en">English</option>
+                <option value="ne">नेपाली (Nepali)</option>
+            </select>
+        </div>
+        
+        <!-- Footer -->
+        <footer class="login-footer">
+            <p>© 2024 Krishi Bazaar - A Human-Centric Platform for Nepali Agriculture</p>
+            <p>Need help? Call us at 01-4221234 or email support@krishibazaar.np</p>
+            <p style="margin-top: 10px; font-size: 0.8rem;">
+                <a href="#" style="margin-right: 15px;">About Us</a>
+                <a href="#" style="margin-right: 15px;">Contact</a>
+                <a href="#" style="margin-right: 15px;">Privacy</a>
+                <a href="#">Terms</a>
+            </p>
+        </footer>
+    </div>
+    
+    <script>
+        // DOM Ready
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize login page
+            initLoginPage();
+            
+            // Check for saved language preference
+            const savedLanguage = localStorage.getItem('krishiBazaarLanguage');
+            if (savedLanguage) {
+                document.getElementById('language-select').value = savedLanguage;
+            }
+            
+            // Update copyright year
+            document.querySelector('.login-footer p').innerHTML = `© ${new Date().getFullYear()} Krishi Bazaar - A Human-Centric Platform for Nepali Agriculture`;
+        });
+        
+        function initLoginPage() {
+            // Tab switching functionality
+            const loginTab = document.getElementById('login-tab');
+            const registerTab = document.getElementById('register-tab');
+            const loginForm = document.getElementById('login-form');
+            const registerForm = document.getElementById('register-form');
+            const switchToRegister = document.getElementById('switch-to-register');
+            const switchToLogin = document.getElementById('switch-to-login');
+            
+            // Function to switch tabs
+            function switchTab(tabName) {
+                if (tabName === 'login') {
+                    loginTab.classList.add('active');
+                    registerTab.classList.remove('active');
+                    loginForm.classList.add('active');
+                    registerForm.classList.remove('active');
+                    clearErrors('login');
+                } else {
+                    registerTab.classList.add('active');
+                    loginTab.classList.remove('active');
+                    registerForm.classList.add('active');
+                    loginForm.classList.remove('active');
+                    clearErrors('register');
+                }
+            }
+            
+            // Tab click events
+            loginTab.addEventListener('click', () => switchTab('login'));
+            registerTab.addEventListener('click', () => switchTab('register'));
+            
+            // Switch links
+            switchToRegister.addEventListener('click', (e) => {
+                e.preventDefault();
+                switchTab('register');
+            });
+            
+            switchToLogin.addEventListener('click', (e) => {
+                e.preventDefault();
+                switchTab('login');
+            });
+            
+            // Password toggle functionality
+            initPasswordToggle('login-password-toggle', 'login-password');
+            initPasswordToggle('register-password-toggle', 'register-password');
+            initPasswordToggle('register-confirm-password-toggle', 'register-confirm-password');
+            
+            // District selection handling
+            const locationSelect = document.getElementById('register-location');
+            const otherDistrictContainer = document.getElementById('district-other-container');
+            
+            locationSelect.addEventListener('change', function() {
+                if (this.value === 'other') {
+                    otherDistrictContainer.style.display = 'block';
+                    document.getElementById('register-other-district').required = true;
+                } else {
+                    otherDistrictContainer.style.display = 'none';
+                    document.getElementById('register-other-district').required = false;
+                }
+            });
+            
+            // Login functionality
+            const loginBtn = document.getElementById('login-btn');
+            loginBtn.addEventListener('click', handleLogin);
+            
+            // Register functionality
+            const registerBtn = document.getElementById('register-btn');
+            registerBtn.addEventListener('click', handleRegister);
+            
+            // Enter key support
+            document.getElementById('login-form').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    handleLogin();
+                }
+            });
+            
+            document.getElementById('register-form').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    handleRegister();
+                }
+            });
+            
+            // Forgot password
+            const forgotPasswordLink = document.getElementById('forgot-password');
+            forgotPasswordLink.addEventListener('click', function(e) {
+                e.preventDefault();
+                handleForgotPassword();
+            });
+            
+            // Language selector
+            const languageSelect = document.getElementById('language-select');
+            languageSelect.addEventListener('change', function() {
+                localStorage.setItem('krishiBazaarLanguage', this.value);
+                if (this.value === 'ne') {
+                    alert('नेपाली भाषा समर्थन चाँडै आउँदैछ। (Nepali language support coming soon!)');
+                    this.value = 'en'; // Reset to English for now
+                }
+            });
+            
+            // Terms and Privacy links
+            const termsLinks = document.querySelectorAll('a[href="#"]');
+            termsLinks.forEach(link => {
+                if (link.textContent.includes('Terms') || link.textContent.includes('Privacy')) {
+                    link.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        alert('Terms and Privacy documents will be available soon.');
+                    });
+                }
+            });
+        }
+        
+        function initPasswordToggle(toggleId, passwordId) {
+            const toggleBtn = document.getElementById(toggleId);
+            const passwordInput = document.getElementById(passwordId);
+            
+            if (toggleBtn && passwordInput) {
+                toggleBtn.addEventListener('click', function() {
+                    const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                    passwordInput.setAttribute('type', type);
+                    this.innerHTML = type === 'password' ? '<i class="fas fa-eye"></i>' : '<i class="fas fa-eye-slash"></i>';
+                });
+            }
+        }
+        
+        function handleLogin() {
+            const email = document.getElementById('login-email').value.trim();
+            const password = document.getElementById('login-password').value;
+            const userType = document.getElementById('user-type').value;
+            
+            // Clear previous errors
+            clearErrors('login');
+            
+            // Validation
+            let isValid = true;
+            
+            if (!email) {
+                showError('login-email-error', 'Please enter email or phone number');
+                isValid = false;
+            }
+            
+            if (!password) {
+                showError('login-password-error', 'Please enter password');
+                isValid = false;
+            }
+            
+            if (!userType) {
+                showError('user-type-error', 'Please select user type');
+                isValid = false;
+            }
+            
+            if (!isValid) return;
+            
+            // Simple validation for demo - in real app, this would be server-side
+            if (password.length < 6) {
+                showError('login-password-error', 'Password must be at least 6 characters');
+                return;
+            }
+            
+            // Show loading state
+            const loginBtn = document.getElementById('login-btn');
+            const originalText = loginBtn.textContent;
+            loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Logging in...';
+            loginBtn.disabled = true;
+            
+            // Call backend API to login
+            fetch('http://localhost:3000/api/auth/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    email: email,
+                    password: password
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const user = data.user;
+                    
+                    // Check if user type matches
+                    if (user.type !== userType) {
+                        alert(`This email is registered as a ${user.type}. Please select the correct user type.`);
+                        loginBtn.textContent = originalText;
+                        loginBtn.disabled = false;
+                        return;
+                    }
+                    
+                    // Create user object with additional fields
+                    const currentUser = {
+                        id: user.id,
+                        name: user.name,
+                        email: user.email,
+                        phone: user.phone,
+                        location: user.location,
+                        district: user.location,
+                        type: user.type,
+                        joinDate: user.created_at ? user.created_at.split('T')[0] : new Date().toISOString().split('T')[0]
+                    };
+                    
+                    // Add additional data based on user type
+                    if (user.type === 'farmer') {
+                        currentUser.products = user.products || 0;
+                        currentUser.orders = user.orders || 0;
+                        currentUser.rating = user.rating || 0;
+                        currentUser.earnings = user.earnings || "NPR 0";
+                    } else {
+                        currentUser.orders = user.orders || 0;
+                        currentUser.cartItems = user.cartItems || 0;
+                        currentUser.totalSpent = user.totalSpent || "NPR 0";
+                    }
+                    
+                    // Save to session storage
+                    sessionStorage.setItem('currentUser', JSON.stringify(currentUser));
+                    sessionStorage.setItem('userType', user.type);
+                    sessionStorage.setItem('isLoggedIn', 'true');
+                    sessionStorage.setItem('notificationCount', Math.floor(Math.random() * 10) + 1);
+                    
+                    // Redirect to appropriate dashboard
+                    if (user.type === 'farmer') {
+                        checkPageExists('farmer-dashboard.html', function(exists) {
+                            if (exists) {
+                                window.location.href = 'farmer-dashboard.html';
+                            } else {
+                                window.location.href = 'customer-dashboard.html';
+                            }
+                        });
+                    } else {
+                        window.location.href = 'customer-dashboard.html';
+                    }
+                } else {
+                    // Show error message
+                    showError('login-password-error', data.message || 'Invalid email or password');
+                    loginBtn.textContent = originalText;
+                    loginBtn.disabled = false;
+                }
+            })
+            .catch(error => {
+                console.error('Login error:', error);
+                alert('Failed to login. Please make sure the server is running.\n\nRun: node server.js');
+                loginBtn.textContent = originalText;
+                loginBtn.disabled = false;
+            });
+        }
+        
+        function checkPageExists(pageUrl, callback) {
+            // For demo, we'll assume farmer-dashboard.html exists
+            // In a real app, you would make a HEAD request
+            const pages = {
+                'farmer-dashboard.html': true,
+                'customer-dashboard.html': true,
+                'Customer-marketplace.html': true,
+                'Customer-messages.html': true,
+                'Customer-mycart.html': true,
+                'Customer-myorders.html': true,
+                'Customer-nepalmap.html': true,
+                'Customer-myprofile.html': true,
+                'Customer-notifications.html': true
+            };
+            
+            callback(pages[pageUrl] || false);
+        }
+        
+        function handleRegister() {
+            // Get form values
+            const name = document.getElementById('register-name').value.trim();
+            const email = document.getElementById('register-email').value.trim();
+            const phone = document.getElementById('register-phone').value.trim();
+            const password = document.getElementById('register-password').value;
+            const confirmPassword = document.getElementById('register-confirm-password').value;
+            const userType = document.getElementById('register-type').value;
+            const location = document.getElementById('register-location').value;
+            const otherDistrict = document.getElementById('register-other-district')?.value.trim() || '';
+            const termsAgreed = document.getElementById('terms-agreement').checked;
+            
+            // Clear previous errors
+            clearErrors('register');
+            
+            // Validation
+            let isValid = true;
+            
+            if (!name) {
+                showError('register-name-error', 'Please enter your full name');
+                isValid = false;
+            }
+            
+            if (!email) {
+                showError('register-email-error', 'Please enter email address');
+                isValid = false;
+            } else if (!isValidEmail(email)) {
+                showError('register-email-error', 'Please enter a valid email address');
+                isValid = false;
+            }
+            
+            if (!phone) {
+                showError('register-phone-error', 'Please enter phone number');
+                isValid = false;
+            } else if (!isValidPhone(phone)) {
+                showError('register-phone-error', 'Please enter a valid 10-digit phone number');
+                isValid = false;
+            }
+            
+            if (!password) {
+                showError('register-password-error', 'Please create a password');
+                isValid = false;
+            } else if (password.length < 6) {
+                showError('register-password-error', 'Password must be at least 6 characters');
+                isValid = false;
+            }
+            
+            if (!confirmPassword) {
+                showError('register-confirm-password-error', 'Please confirm your password');
+                isValid = false;
+            } else if (password !== confirmPassword) {
+                showError('register-confirm-password-error', 'Passwords do not match');
+                isValid = false;
+            }
+            
+            if (!userType) {
+                showError('register-type-error', 'Please select account type');
+                isValid = false;
+            }
+            
+            if (!location) {
+                showError('register-location-error', 'Please select your district');
+                isValid = false;
+            } else if (location === 'other' && !otherDistrict) {
+                showError('register-other-district-error', 'Please enter your district name');
+                isValid = false;
+            }
+            
+            if (!termsAgreed) {
+                showError('terms-agreement-error', 'You must agree to the Terms and Privacy Policy');
+                isValid = false;
+            }
+            
+            if (!isValid) return;
+            
+            // Show loading state
+            const registerBtn = document.getElementById('register-btn');
+            const originalText = registerBtn.textContent;
+            registerBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating account...';
+            registerBtn.disabled = true;
+            
+            // Get final district name
+            const finalDistrict = location === 'other' ? otherDistrict : 
+                document.getElementById('register-location').options[document.getElementById('register-location').selectedIndex].text;
+            
+            // Call backend API to register user
+            fetch('http://localhost:3000/api/auth/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    name: name,
+                    email: email,
+                    phone: phone,
+                    password: password,
+                    userType: userType,
+                    location: finalDistrict
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Create user object for session
+                    const newUser = {
+                        id: data.userId,
+                        name: name,
+                        email: email,
+                        phone: phone,
+                        location: finalDistrict,
+                        district: finalDistrict,
+                        type: userType,
+                        joinDate: new Date().toISOString().split('T')[0]
+                    };
+                    
+                    // Add additional data based on user type
+                    if (userType === 'farmer') {
+                        newUser.products = 0;
+                        newUser.orders = 0;
+                        newUser.rating = 0;
+                        newUser.earnings = "NPR 0";
+                    } else {
+                        newUser.orders = 0;
+                        newUser.cartItems = 0;
+                        newUser.totalSpent = "NPR 0";
+                    }
+                    
+                    // Save to session storage for current session
+                    sessionStorage.setItem('currentUser', JSON.stringify(newUser));
+                    sessionStorage.setItem('userType', userType);
+                    sessionStorage.setItem('isLoggedIn', 'true');
+                    sessionStorage.setItem('notificationCount', '1');
+                    
+                    // Show success message
+                    alert(`Registration successful! Welcome to Krishi Bazaar, ${name}.\n\nYour account has been saved permanently. You can now log in anytime!`);
+                    
+                    // Redirect to appropriate dashboard
+                    if (userType === 'farmer') {
+                        checkPageExists('farmer-dashboard.html', function(exists) {
+                            if (exists) {
+                                window.location.href = 'farmer-dashboard.html';
+                            } else {
+                                window.location.href = 'customer-dashboard.html';
+                            }
+                        });
+                    } else {
+                        window.location.href = 'customer-dashboard.html';
+                    }
+                } else {
+                    // Show error message
+                    alert(`Registration failed: ${data.message}`);
+                    registerBtn.textContent = originalText;
+                    registerBtn.disabled = false;
+                }
+            })
+            .catch(error => {
+                console.error('Registration error:', error);
+                alert('Failed to register. Please make sure the server is running.\n\nRun: node server.js');
+                registerBtn.textContent = originalText;
+                registerBtn.disabled = false;
+            });
+        }
+        
+        function handleForgotPassword() {
+            const email = prompt('Please enter your email address to reset your password:');
+            if (email && isValidEmail(email)) {
+                alert(`Password reset instructions have been sent to ${email}.\n\nFor this demo, you can use any password to login.`);
+            } else if (email) {
+                alert('Please enter a valid email address.');
+            }
+        }
+        
+        function showError(elementId, message) {
+            const errorElement = document.getElementById(elementId);
+            if (errorElement) {
+                errorElement.textContent = message;
+                errorElement.style.display = 'block';
+            }
+        }
+        
+        function clearErrors(formType) {
+            const errorElements = document.querySelectorAll(`#${formType}-form .error-message`);
+            errorElements.forEach(element => {
+                element.textContent = '';
+                element.style.display = 'none';
+            });
+        }
+        
+        function isValidEmail(email) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailRegex.test(email);
+        }
+        
+        function isValidPhone(phone) {
+            const phoneRegex = /^[0-9]{10}$/;
+            return phoneRegex.test(phone);
+        }
+        
+        // Page Navigation Helper Functions
+        function navigateToPage(page) {
+            // Check if user is logged in
+            const isLoggedIn = sessionStorage.getItem('isLoggedIn');
+            const currentUser = JSON.parse(sessionStorage.getItem('currentUser'));
+            
+            if (!isLoggedIn || !currentUser) {
+                alert('Please login first');
+                window.location.href = 'index.html';
+                return;
+            }
+            
+            // Check if page exists
+            checkPageExists(page, function(exists) {
+                if (exists) {
+                    window.location.href = page;
+                } else {
+                    // Try alternative names
+                    const alternativePages = {
+                        'marketplace.html': 'Customer-marketplace.html',
+                        'messages.html': 'Customer-messages.html',
+                        'cart.html': 'Customer-mycart.html',
+                        'orders.html': 'Customer-myorders.html',
+                        'nepal-map.html': 'Customer-nepalmap.html',
+                        'profile.html': 'Customer-myprofile.html',
+                        'notifications.html': 'Customer-notifications.html',
+                        'product-listing.html': 'Customer-marketplace.html'
+                    };
+                    
+                    if (alternativePages[page]) {
+                        checkPageExists(alternativePages[page], function(altExists) {
+                            if (altExists) {
+                                window.location.href = alternativePages[page];
+                            } else {
+                                alert('Page not found. You will be redirected to the dashboard.');
+                                window.location.href = currentUser.type === 'farmer' ? 'farmer-dashboard.html' : 'customer-dashboard.html';
+                            }
+                        });
+                    } else {
+                        alert('Page not found. You will be redirected to the dashboard.');
+                        window.location.href = currentUser.type === 'farmer' ? 'farmer-dashboard.html' : 'customer-dashboard.html';
+                    }
+                }
+            });
+        }
+        
+        // Global navigation function
+        window.navigateToPage = navigateToPage;
+        
+        // Auto-logout after 1 hour
+        setTimeout(function() {
+            const isLoggedIn = sessionStorage.getItem('isLoggedIn');
+            if (isLoggedIn) {
+                sessionStorage.clear();
+                alert('Your session has expired. Please login again.');
+                window.location.href = 'index.html';
+            }
+        }, 60 * 60 * 1000); // 1 hour
+    </script>
+</body>
+</html>

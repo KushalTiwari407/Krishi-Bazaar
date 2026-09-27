@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Redirecting to Marketplace...</title>
+    <script>
+        // Redirect to appropriate marketplace page based on user type
+        const currentUser = JSON.parse(sessionStorage.getItem('currentUser'));
+        const userType = currentUser?.type || 'customer';
+        
+        if (userType === 'farmer') {
+            window.location.replace('mp.html');
+        } else {
+            window.location.replace('Customer-marketplace.html');
+        }
+    </script>
+</head>
+<body>
+    <p>Redirecting to marketplace page...</p>
+    <p>If you are not redirected automatically, please <a href="Customer-marketplace.html">click here for customers</a> or <a href="mp.html">here for farmers</a>.</p>
+</body>
+</html>

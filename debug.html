@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Krishi Bazaar - Debug Tool</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        h1 {
+            color: white;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        .debug-panel {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        .debug-panel h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #667eea;
+        }
+        .button-group {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        button:active {
+            transform: translateY(0);
+        }
+        button.danger {
+            background: linear-gradient(135deg, #f93e3e 0%, #c72828 100%);
+        }
+        button.success {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        }
+        #output {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            padding: 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            max-height: 400px;
+            overflow-y: auto;
+            line-height: 1.6;
+        }
+        .info-box {
+            background: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+        .success-box {
+            background: #e8f5e9;
+            border-left: 4px solid #4caf50;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+        .error-box {
+            background: #ffebee;
+            border-left: 4px solid #f44336;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        .stat-card h3 {
+            font-size: 2em;
+            margin-bottom: 5px;
+        }
+        .stat-card p {
+            opacity: 0.9;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Krishi Bazaar Debug Tool</h1>
+        
+        <!-- Current Status -->
+        <div class="debug-panel">
+            <h2>📊 Current Status</h2>
+            <div class="stat-grid" id="stat-grid">
+                <div class="stat-card">
+                    <h3 id="login-status">❌</h3>
+                    <p>Logged In</p>
+                </div>
+                <div class="stat-card">
+                    <h3 id="user-type-status">-</h3>
+                    <p>User Type</p>
+                </div>
+                <div class="stat-card">
+                    <h3 id="user-name-status">-</h3>
+                    <p>User Name</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Session Storage -->
+        <div class="debug-panel">
+            <h2>💾 Session Storage</h2>
+            <div class="button-group">
+                <button onclick="checkStorage()" class="success">🔍 Check Storage</button>
+                <button onclick="clearStorage()" class="danger">🗑️ Clear Storage</button>
+                <button onclick="exportStorage()">📥 Export Data</button>
+            </div>
+            <div id="storage-output"></div>
+        </div>
+
+        <!-- Test Registration -->
+        <div class="debug-panel">
+            <h2>🧪 Test Registration</h2>
+            <div class="button-group">
+                <button onclick="testFarmerReg()">👨‍🌾 Create Test Farmer</button>
+                <button onclick="testCustomerReg()">🛒 Create Test Customer</button>
+                <button onclick="testMultipleUsers()">👥 Create Multiple Users</button>
+            </div>
+            <div class="info-box">
+                <strong>Note:</strong> These buttons will create test users and save them to sessionStorage. 
+                You can then navigate to the dashboard to see if the user info loads correctly.
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="debug-panel">
+            <h2>🧭 Navigation Tests</h2>
+            <div class="button-group">
+                <button onclick="goToDashboard()">📊 Go to Dashboard</button>
+                <button onclick="goToFarmerDashboard()">👨‍🌾 Farmer Dashboard</button>
+                <button onclick="goToCustomerDashboard()">🛒 Customer Dashboard</button>
+                <button onclick="goToLogin()">🔐 Login Page</button>
+            </div>
+        </div>
+
+        <!-- Output Console -->
+        <div class="debug-panel">
+            <h2>📋 Debug Output</h2>
+            <div id="output">Click a button above to see debug information...</div>
+        </div>
+    </div>
+
+    <script>
+        // Update status on load
+        window.addEventListener('load', function() {
+            updateStatus();
+        });
+
+        function updateStatus() {
+            const currentUser = JSON.parse(sessionStorage.getItem('currentUser') || 'null');
+            const isLoggedIn = sessionStorage.getItem('isLoggedIn');
+            
+            document.getElementById('login-status').textContent = isLoggedIn === 'true' ? '✅' : '❌';
+            document.getElementById('user-type-status').textContent = currentUser?.type || '-';
+            document.getElementById('user-name-status').textContent = currentUser?.name?.split(' ')[0] || '-';
+        }
+
+        function log(message, type = 'info') {
+            const output = document.getElementById('output');
+            const timestamp = new Date().toLocaleTimeString();
+            const prefix = type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️';
+            output.textContent = `[${timestamp}] ${prefix} ${message}\n` + output.textContent;
+        }
+
+        function checkStorage() {
+            const storageOutput = document.getElementById('storage-output');
+            const currentUser = sessionStorage.getItem('currentUser');
+            const userType = sessionStorage.getItem('userType');
+            const isLoggedIn = sessionStorage.getItem('isLoggedIn');
+            const notificationCount = sessionStorage.getItem('notificationCount');
+
+            let html = '<div style="margin-top: 15px;">';
+            
+            if (currentUser) {
+                const user = JSON.parse(currentUser);
+                html += '<div class="success-box">';
+                html += '<h3>✅ User Found in SessionStorage</h3>';
+                html += '<pre style="margin-top: 10px; background: white; padding: 10px; border-radius: 4px;">';
+                html += JSON.stringify(user, null, 2);
+                html += '</pre></div>';
+                
+                log('Current user: ' + user.name + ' (' + user.type + ')', 'success');
+            } else {
+                html += '<div class="error-box">';
+                html += '<h3>❌ No User Found</h3>';
+                html += '<p>No currentUser in sessionStorage. Please register or login.</p>';
+                html += '</div>';
+                
+                log('No user found in sessionStorage', 'error');
+            }
+
+            html += '<div style="margin-top: 15px; padding: 15px; background: #f8f9fa; border-radius: 4px;">';
+            html += '<strong>Other Session Data:</strong><br>';
+            html += 'UserType: ' + (userType || 'Not set') + '<br>';
+            html += 'IsLoggedIn: ' + (isLoggedIn || 'Not set') + '<br>';
+            html += 'NotificationCount: ' + (notificationCount || 'Not set');
+            html += '</div>';
+            
+            html += '</div>';
+            storageOutput.innerHTML = html;
+            updateStatus();
+        }
+
+        function clearStorage() {
+            if (confirm('Are you sure you want to clear all session data?')) {
+                sessionStorage.clear();
+                log('SessionStorage cleared', 'success');
+                checkStorage();
+                updateStatus();
+            }
+        }
+
+        function exportStorage() {
+            const data = {
+                currentUser: sessionStorage.getItem('currentUser'),
+                userType: sessionStorage.getItem('userType'),
+                isLoggedIn: sessionStorage.getItem('isLoggedIn'),
+                notificationCount: sessionStorage.getItem('notificationCount')
+            };
+            
+            const dataStr = JSON.stringify(data, null, 2);
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'krishi-bazaar-session-' + Date.now() + '.json';
+            link.click();
+            
+            log('Session data exported', 'success');
+        }
+
+        function testFarmerReg() {
+            const names = ['Ram Prasad Sharma', 'Hari Bahadur Thapa', 'Krishna Kumar Poudel'];
+            const randomName = names[Math.floor(Math.random() * names.length)];
+            
+            const newUser = {
+                id: Date.now(),
+                name: randomName,
+                email: randomName.toLowerCase().replace(/ /g, '.') + '@farmer.com',
+                phone: '98' + Math.floor(10000000 + Math.random() * 90000000),
+                location: 'Kathmandu',
+                district: 'Kathmandu',
+                type: 'farmer',
+                joinDate: new Date().toISOString().split('T')[0],
+                products: 0,
+                orders: 0,
+                rating: 0,
+                earnings: 'NPR 0'
+            };
+            
+            sessionStorage.setItem('currentUser', JSON.stringify(newUser));
+            sessionStorage.setItem('userType', 'farmer');
+            sessionStorage.setItem('isLoggedIn', 'true');
+            sessionStorage.setItem('notificationCount', '2');
+            
+            log('Test farmer created: ' + newUser.name, 'success');
+            checkStorage();
+            updateStatus();
+        }
+
+        function testCustomerReg() {
+            const names = ['Sita Rani Thapa', 'Maya Kumari Sharma', 'Anita Devi Poudel'];
+            const randomName = names[Math.floor(Math.random() * names.length)];
+            
+            const newUser = {
+                id: Date.now(),
+                name: randomName,
+                email: randomName.toLowerCase().replace(/ /g, '.') + '@customer.com',
+                phone: '98' + Math.floor(10000000 + Math.random() * 90000000),
+                location: 'Pokhara',
+                district: 'Kaski',
+                type: 'customer',
+                joinDate: new Date().toISOString().split('T')[0],
+                orders: 0,
+                cartItems: 0,
+                totalSpent: 'NPR 0'
+            };
+            
+            sessionStorage.setItem('currentUser', JSON.stringify(newUser));
+            sessionStorage.setItem('userType', 'customer');
+            sessionStorage.setItem('isLoggedIn', 'true');
+            sessionStorage.setItem('notificationCount', '3');
+            
+            log('Test customer created: ' + newUser.name, 'success');
+            checkStorage();
+            updateStatus();
+        }
+
+        function testMultipleUsers() {
+            log('Creating multiple test scenarios...', 'info');
+            
+            // Test 1: Farmer with long name
+            const farmer1 = {
+                id: Date.now(),
+                name: 'Ram Bahadur Shrestha Magar',
+                email: 'ram.magar@test.com',
+                phone: '9841234567',
+                location: 'Kathmandu',
+                district: 'Kathmandu',
+                type: 'farmer',
+                joinDate: '2024-01-15',
+                products: 5,
+                orders: 23,
+                rating: 4.5,
+                earnings: 'NPR 45,000'
+            };
+            
+            log('Test 1: Farmer with long name - ' + farmer1.name, 'success');
+            log('Initials should be: ' + farmer1.name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2), 'info');
+            
+            // Save the farmer
+            sessionStorage.setItem('currentUser', JSON.stringify(farmer1));
+            sessionStorage.setItem('userType', 'farmer');
+            sessionStorage.setItem('isLoggedIn', 'true');
+            
+            checkStorage();
+            updateStatus();
+        }
+
+        function goToDashboard() {
+            const userType = sessionStorage.getItem('userType');
+            if (userType === 'farmer') {
+                log('Redirecting to farmer dashboard...', 'info');
+                window.location.href = 'farmer-dashboard.html';
+            } else if (userType === 'customer') {
+                log('Redirecting to customer dashboard...', 'info');
+                window.location.href = 'customer-dashboard.html';
+            } else {
+                alert('Please create a test user first!');
+                log('No user type found. Create a test user first.', 'error');
+            }
+        }
+
+        function goToFarmerDashboard() {
+            log('Redirecting to farmer dashboard...', 'info');
+            window.location.href = 'farmer-dashboard.html';
+        }
+
+        function goToCustomerDashboard() {
+            log('Redirecting to customer dashboard...', 'info');
+            window.location.href = 'customer-dashboard.html';
+        }
+
+        function goToLogin() {
+            log('Redirecting to login page...', 'info');
+            window.location.href = 'index.html';
+        }
+
+        // Auto-check storage on load
+        checkStorage();
+    </script>
+</body>
+</html>

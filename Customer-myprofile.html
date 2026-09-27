@@ -1,0 +1,1498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile - Krishi Bazaar</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        /* Profile Specific Styles */
+        .profile-header {
+            background: linear-gradient(135deg, #607D8B, #455A64);
+            color: white;
+            padding: 30px;
+            border-radius: var(--border-radius);
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .profile-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" opacity="0.1"><circle cx="50" cy="50" r="40" fill="white"/><path d="M30,30 L70,30 L70,70 L30,70 Z" fill="white"/></svg>');
+            background-size: 100px;
+        }
+        
+        .profile-container {
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 30px;
+        }
+        
+        .profile-sidebar {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 25px;
+            height: fit-content;
+            position: sticky;
+            top: 20px;
+        }
+        
+        .profile-info {
+            text-align: center;
+            padding: 20px 0;
+            border-bottom: 1px solid var(--light-gray);
+            margin-bottom: 20px;
+        }
+        
+        .profile-avatar-large {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-green), #2E7D32);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            color: white;
+            font-size: 2.5rem;
+            font-weight: bold;
+            border: 5px solid white;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .profile-name {
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+            color: var(--text-dark);
+        }
+        
+        .profile-role {
+            color: var(--primary-green);
+            font-weight: 500;
+            margin-bottom: 15px;
+        }
+        
+        .profile-location {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            color: var(--dark-gray);
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+        }
+        
+        .profile-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .profile-stat {
+            text-align: center;
+            padding: 15px;
+            background: var(--light-gray);
+            border-radius: var(--border-radius);
+        }
+        
+        .stat-number {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-green);
+            display: block;
+        }
+        
+        .stat-label {
+            font-size: 0.85rem;
+            color: var(--dark-gray);
+            margin-top: 5px;
+        }
+        
+        .profile-menu {
+            list-style: none;
+            padding: 0;
+            margin: 20px 0;
+        }
+        
+        .profile-menu li {
+            margin-bottom: 10px;
+        }
+        
+        .profile-menu a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 15px;
+            color: var(--text-dark);
+            text-decoration: none;
+            border-radius: var(--border-radius);
+            transition: all 0.3s ease;
+        }
+        
+        .profile-menu a:hover {
+            background: var(--light-gray);
+        }
+        
+        .profile-menu a.active {
+            background: rgba(76, 175, 80, 0.1);
+            color: var(--primary-green);
+            font-weight: 500;
+        }
+        
+        .profile-menu a i {
+            width: 20px;
+            text-align: center;
+        }
+        
+        /* Profile Content */
+        .profile-content {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 30px;
+        }
+        
+        .profile-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid var(--light-gray);
+            padding-bottom: 0;
+        }
+        
+        .profile-tab {
+            padding: 12px 25px;
+            background: none;
+            border: none;
+            border-bottom: 3px solid transparent;
+            font-size: 1rem;
+            cursor: pointer;
+            color: var(--dark-gray);
+            transition: all 0.3s ease;
+        }
+        
+        .profile-tab:hover {
+            color: var(--text-dark);
+        }
+        
+        .profile-tab.active {
+            color: var(--primary-green);
+            border-bottom-color: var(--primary-green);
+            font-weight: 600;
+        }
+        
+        .profile-section {
+            display: none;
+        }
+        
+        .profile-section.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .section-title {
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+            color: var(--text-dark);
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--light-gray);
+        }
+        
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+        
+        .form-group-profile {
+            margin-bottom: 20px;
+        }
+        
+        .form-group-profile label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--text-dark);
+        }
+        
+        .form-group-profile input,
+        .form-group-profile select,
+        .form-group-profile textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid var(--medium-gray);
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            font-family: inherit;
+            transition: border-color 0.3s ease;
+        }
+        
+        .form-group-profile input:focus,
+        .form-group-profile select:focus,
+        .form-group-profile textarea:focus {
+            outline: none;
+            border-color: var(--primary-green);
+        }
+        
+        .form-group-profile textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+        
+        .form-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid var(--light-gray);
+        }
+        
+        .profile-card {
+            background: var(--light-gray);
+            padding: 20px;
+            border-radius: var(--border-radius);
+            margin-bottom: 20px;
+        }
+        
+        .profile-card-title {
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--text-dark);
+        }
+        
+        .profile-card-content {
+            color: var(--dark-gray);
+            font-size: 0.95rem;
+        }
+        
+        .preferences-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .preference-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 15px;
+            background: white;
+            border: 1px solid var(--medium-gray);
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .preference-item:hover {
+            border-color: var(--primary-green);
+            background: rgba(76, 175, 80, 0.05);
+        }
+        
+        .preference-item.selected {
+            border-color: var(--primary-green);
+            background: rgba(76, 175, 80, 0.1);
+        }
+        
+        .preference-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary-green);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .activity-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .activity-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            padding: 15px 0;
+            border-bottom: 1px solid var(--light-gray);
+        }
+        
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+        
+        .activity-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--light-gray);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--dark-gray);
+            flex-shrink: 0;
+        }
+        
+        .activity-content {
+            flex: 1;
+        }
+        
+        .activity-title {
+            font-weight: 500;
+            margin-bottom: 5px;
+            color: var(--text-dark);
+        }
+        
+        .activity-description {
+            color: var(--dark-gray);
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+        }
+        
+        .activity-time {
+            font-size: 0.8rem;
+            color: var(--dark-gray);
+        }
+        
+        .verification-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(76, 175, 80, 0.1);
+            color: var(--primary-green);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 15px;
+        }
+        
+        .security-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid var(--light-gray);
+        }
+        
+        .security-item:last-child {
+            border-bottom: none;
+        }
+        
+        .security-info h4 {
+            margin-bottom: 5px;
+            color: var(--text-dark);
+        }
+        
+        .security-info p {
+            color: var(--dark-gray);
+            font-size: 0.9rem;
+        }
+        
+        .member-since {
+            color: var(--dark-gray);
+            font-size: 0.9rem;
+            margin-top: 10px;
+        }
+        
+        .upload-avatar {
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .avatar-preview {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            margin: 0 auto 15px;
+            overflow: hidden;
+            border: 5px solid white;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .avatar-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        @media (max-width: 992px) {
+            .profile-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .profile-sidebar {
+                position: static;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .profile-header {
+                padding: 20px;
+            }
+            
+            .profile-tabs {
+                flex-wrap: wrap;
+            }
+            
+            .profile-tab {
+                padding: 10px 15px;
+                font-size: 0.9rem;
+            }
+            
+            .preferences-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .profile-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .profile-content {
+                padding: 20px;
+            }
+            
+            .profile-avatar-large {
+                width: 100px;
+                height: 100px;
+                font-size: 2rem;
+            }
+            
+            .form-actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2><i class="fas fa-seedling"></i> <span>Krishi Bazaar</span></h2>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="customer-dashboard.html" data-page="dashboard"><i class="fas fa-tachometer-alt"></i> <span>Dashboard</span></a></li>
+                    <li><a href="Customer-marketplace.html" data-page="marketplace"><i class="fas fa-store"></i> <span>Marketplace</span></a></li>
+                    <li><a href="Customer-myorders.html" data-page="orders"><i class="fas fa-shopping-cart"></i> <span>My Orders</span></a></li>
+                    <li><a href="Customer-messages.html" data-page="messages"><i class="fas fa-comments"></i> <span>Messages</span></a></li>
+                    <li><a href="Customer-mycart.html" data-page="cart"><i class="fas fa-shopping-basket"></i> <span>My Cart</span></a></li>
+                    <li><a href="Customer-nepalmap.html" data-page="map"><i class="fas fa-map"></i> <span>Nepal Map</span></a></li>
+                    <li><a href="Customer-myprofile.html" class="active" data-page="profile"><i class="fas fa-user"></i> <span>My Profile</span></a></li>
+                    <li><a href="Customer-notifications.html" data-page="notifications"><i class="fas fa-bell"></i> <span>Notifications</span></a></li>
+                </ul>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <div class="user-avatar" id="sidebar-avatar">AD</div>
+                    <div>
+                        <h4 id="sidebar-username">Avash Dhakal</h4>
+                        <p id="sidebar-role">Customer</p>
+                    </div>
+                </div>
+                <button class="btn-secondary logout-btn" id="logout-btn">Logout</button>
+            </div>
+        </aside>
+        
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Topbar -->
+            <div class="topbar">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="global-search" placeholder="Search...">
+                </div>
+                <div class="topbar-actions">
+                    <div class="notification-icon">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-badge" id="topbar-notification-count">3</span>
+                    </div>
+                    <div class="user-info">
+                        <div class="user-avatar" id="top-avatar">AD</div>
+                        <span id="top-username">Avash Dhakal</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Profile Header -->
+            <div class="profile-header">
+                <h1 class="page-title">My Profile</h1>
+                <p>Manage your account information and preferences</p>
+            </div>
+            
+            <!-- Profile Container -->
+            <div class="profile-container">
+                <!-- Profile Sidebar -->
+                <div class="profile-sidebar">
+                    <div class="profile-info">
+                        <div class="profile-avatar-large" id="profile-avatar-large">AD</div>
+                        <h2 class="profile-name" id="profile-name">Avash Dhakal</h2>
+                        <div class="profile-role">Customer</div>
+                        <div class="profile-location">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span id="profile-location">Kathmandu, Nepal</span>
+                        </div>
+                        <div class="verification-badge">
+                            <i class="fas fa-check-circle"></i> Verified Account
+                        </div>
+                        <div class="member-since">
+                            <i class="fas fa-calendar-alt"></i> Member since May 2023
+                        </div>
+                    </div>
+                    
+                    <div class="profile-stats">
+                        <div class="profile-stat">
+                            <span class="stat-number" id="stat-orders">5</span>
+                            <span class="stat-label">Orders</span>
+                        </div>
+                        <div class="profile-stat">
+                            <span class="stat-number" id="stat-cart">3</span>
+                            <span class="stat-label">Cart Items</span>
+                        </div>
+                        <div class="profile-stat">
+                            <span class="stat-number">4.8</span>
+                            <span class="stat-label">Rating</span>
+                        </div>
+                        <div class="profile-stat">
+                            <span class="stat-number">100%</span>
+                            <span class="stat-label">Complete</span>
+                        </div>
+                    </div>
+                    
+                    <ul class="profile-menu">
+                        <li><a href="#" class="active" data-tab="personal"><i class="fas fa-user"></i> Personal Info</a></li>
+                        <li><a href="#" data-tab="preferences"><i class="fas fa-cog"></i> Preferences</a></li>
+                        <li><a href="#" data-tab="security"><i class="fas fa-shield-alt"></i> Security</a></li>
+                        <li><a href="#" data-tab="activity"><i class="fas fa-history"></i> Activity</a></li>
+                        <li><a href="#" data-tab="help"><i class="fas fa-question-circle"></i> Help & Support</a></li>
+                    </ul>
+                </div>
+                
+                <!-- Profile Content -->
+                <div class="profile-content">
+                    <!-- Personal Info Tab -->
+                    <div class="profile-section active" id="personal-section">
+                        <h2 class="section-title">Personal Information</h2>
+                        
+                        <div class="upload-avatar">
+                            <div class="avatar-preview" id="avatar-preview">
+                                <!-- Avatar image will be loaded here -->
+                            </div>
+                            <input type="file" id="avatar-upload" accept="image/*" style="display: none;">
+                            <button class="btn-outline" id="change-avatar-btn">
+                                <i class="fas fa-camera"></i> Change Profile Picture
+                            </button>
+                            <p style="color: var(--dark-gray); font-size: 0.9rem; margin-top: 10px;">
+                                Max size 2MB • JPG, PNG, or GIF
+                            </p>
+                        </div>
+                        
+                        <div class="form-grid">
+                            <div class="form-group-profile">
+                                <label for="first-name">First Name *</label>
+                                <input type="text" id="first-name" value="Avash" required>
+                            </div>
+                            
+                            <div class="form-group-profile">
+                                <label for="last-name">Last Name *</label>
+                                <input type="text" id="last-name" value="Dhakal" required>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group-profile">
+                            <label for="email">Email Address *</label>
+                            <input type="email" id="email" value="avash@example.com" required>
+                            <div class="verification-badge" style="margin-top: 10px; width: fit-content;">
+                                <i class="fas fa-check-circle"></i> Email Verified
+                            </div>
+                        </div>
+                        
+                        <div class="form-group-profile">
+                            <label for="phone">Phone Number *</label>
+                            <input type="tel" id="phone" value="+977 9841234567" required>
+                        </div>
+                        
+                        <div class="form-grid">
+                            <div class="form-group-profile">
+                                <label for="district">District *</label>
+                                <select id="district">
+                                    <option value="kathmandu" selected>Kathmandu</option>
+                                    <option value="lalitpur">Lalitpur</option>
+                                    <option value="bhaktapur">Bhaktapur</option>
+                                    <option value="pokhara">Pokhara</option>
+                                    <option value="chitwan">Chitwan</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group-profile">
+                                <label for="municipality">Municipality</label>
+                                <input type="text" id="municipality" value="Kathmandu Metropolitan City">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group-profile">
+                            <label for="address">Full Address</label>
+                            <textarea id="address" placeholder="Enter your complete address">Baneshwor, Kathmandu</textarea>
+                        </div>
+                        
+                        <div class="form-actions">
+                            <button class="btn-primary" id="save-personal">
+                                <i class="fas fa-save"></i> Save Changes
+                            </button>
+                            <button class="btn-outline" id="cancel-personal">
+                                Cancel
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Preferences Tab -->
+                    <div class="profile-section" id="preferences-section">
+                        <h2 class="section-title">Preferences & Settings</h2>
+                        
+                        <div class="profile-card">
+                            <div class="profile-card-title">Notification Preferences</div>
+                            <div class="profile-card-content">
+                                Choose how you want to be notified about orders, messages, and updates.
+                            </div>
+                        </div>
+                        
+                        <div class="preferences-grid">
+                            <div class="preference-item selected" data-pref="email-notifications">
+                                <div class="preference-icon">
+                                    <i class="fas fa-envelope"></i>
+                                </div>
+                                <div>
+                                    <div style="font-weight: 500;">Email Notifications</div>
+                                    <div style="font-size: 0.85rem; color: var(--dark-gray);">Order updates, offers</div>
+                                </div>
+                            </div>
+                            
+                            <div class="preference-item selected" data-pref="sms-notifications">
+                                <div class="preference-icon">
+                                    <i class="fas fa-sms"></i>
+                                </div>
+                                <div>
+                                    <div style="font-weight: 500;">SMS Notifications</div>
+                                    <div style="font-size: 0.85rem; color: var(--dark-gray);">Order delivery updates</div>
+                                </div>
+                            </div>
+                            
+                            <div class="preference-item" data-pref="push-notifications">
+                                <div class="preference-icon">
+                                    <i class="fas fa-bell"></i>
+                                </div>
+                                <div>
+                                    <div style="font-weight: 500;">Push Notifications</div>
+                                    <div style="font-size: 0.85rem; color: var(--dark-gray);">App notifications</div>
+                                </div>
+                            </div>
+                            
+                            <div class="preference-item selected" data-pref="marketing-emails">
+                                <div class="preference-icon">
+                                    <i class="fas fa-bullhorn"></i>
+                                </div>
+                                <div>
+                                    <div style="font-weight: 500;">Marketing Emails</div>
+                                    <div style="font-size: 0.85rem; color: var(--dark-gray);">Promotions, new products</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="profile-card">
+                            <div class="profile-card-title">Product Preferences</div>
+                            <div class="profile-card-content">
+                                Select your preferred product categories to get personalized recommendations.
+                            </div>
+                        </div>
+                        
+                        <div class="preferences-grid">
+                            <div class="preference-item selected" data-category="vegetables">
+                                <div class="preference-icon">
+                                    <i class="fas fa-seedling"></i>
+                                </div>
+                                <div style="font-weight: 500;">Vegetables</div>
+                            </div>
+                            
+                            <div class="preference-item selected" data-category="fruits">
+                                <div class="preference-icon">
+                                    <i class="fas fa-apple-alt"></i>
+                                </div>
+                                <div style="font-weight: 500;">Fruits</div>
+                            </div>
+                            
+                            <div class="preference-item" data-category="grains">
+                                <div class="preference-icon">
+                                    <i class="fas fa-seedling"></i>
+                                </div>
+                                <div style="font-weight: 500;">Grains</div>
+                            </div>
+                            
+                            <div class="preference-item" data-category="dairy">
+                                <div class="preference-icon">
+                                    <i class="fas fa-wine-bottle"></i>
+                                </div>
+                                <div style="font-weight: 500;">Dairy</div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-actions">
+                            <button class="btn-primary" id="save-preferences">
+                                <i class="fas fa-save"></i> Save Preferences
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Security Tab -->
+                    <div class="profile-section" id="security-section">
+                        <h2 class="section-title">Security Settings</h2>
+                        
+                        <div class="profile-card">
+                            <div class="profile-card-title">Account Security</div>
+                            <div class="profile-card-content">
+                                Keep your account secure with these settings.
+                            </div>
+                        </div>
+                        
+                        <div class="security-item">
+                            <div class="security-info">
+                                <h4>Password</h4>
+                                <p>Last changed 2 months ago</p>
+                            </div>
+                            <button class="btn-outline" id="change-password-btn">
+                                Change Password
+                            </button>
+                        </div>
+                        
+                        <div class="security-item">
+                            <div class="security-info">
+                                <h4>Two-Factor Authentication</h4>
+                                <p>Add an extra layer of security to your account</p>
+                            </div>
+                            <button class="btn-outline" id="enable-2fa">
+                                Enable
+                            </button>
+                        </div>
+                        
+                        <div class="security-item">
+                            <div class="security-info">
+                                <h4>Login History</h4>
+                                <p>View recent login activity</p>
+                            </div>
+                            <button class="btn-outline" id="view-login-history">
+                                View History
+                            </button>
+                        </div>
+                        
+                        <div class="security-item">
+                            <div class="security-info">
+                                <h4>Connected Devices</h4>
+                                <p>Manage devices logged into your account</p>
+                            </div>
+                            <button class="btn-outline" id="manage-devices">
+                                Manage
+                            </button>
+                        </div>
+                        
+                        <!-- Change Password Form (Hidden by default) -->
+                        <div id="change-password-form" style="display: none; margin-top: 30px;">
+                            <h3 style="margin-bottom: 20px;">Change Password</h3>
+                            
+                            <div class="form-group-profile">
+                                <label for="current-password">Current Password</label>
+                                <input type="password" id="current-password" placeholder="Enter current password">
+                            </div>
+                            
+                            <div class="form-group-profile">
+                                <label for="new-password">New Password</label>
+                                <input type="password" id="new-password" placeholder="Enter new password">
+                            </div>
+                            
+                            <div class="form-group-profile">
+                                <label for="confirm-new-password">Confirm New Password</label>
+                                <input type="password" id="confirm-new-password" placeholder="Confirm new password">
+                            </div>
+                            
+                            <div class="form-actions">
+                                <button class="btn-primary" id="save-password">
+                                    Update Password
+                                </button>
+                                <button class="btn-outline" id="cancel-password">
+                                    Cancel
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Activity Tab -->
+                    <div class="profile-section" id="activity-section">
+                        <h2 class="section-title">Recent Activity</h2>
+                        
+                        <div class="profile-card">
+                            <div class="profile-card-title">Account Activity</div>
+                            <div class="profile-card-content">
+                                Here's a summary of your recent activities on Krishi Bazaar.
+                            </div>
+                        </div>
+                        
+                        <div class="activity-list" id="activity-list">
+                            <!-- Activity items will be loaded here -->
+                        </div>
+                    </div>
+                    
+                    <!-- Help & Support Tab -->
+                    <div class="profile-section" id="help-section">
+                        <h2 class="section-title">Help & Support</h2>
+                        
+                        <div class="profile-card">
+                            <div class="profile-card-title">Need Help?</div>
+                            <div class="profile-card-content">
+                                We're here to help you with any questions or issues.
+                            </div>
+                        </div>
+                        
+                        <div class="preferences-grid">
+                            <div class="preference-item" data-help="faq">
+                                <div class="preference-icon">
+                                    <i class="fas fa-question-circle"></i>
+                                </div>
+                                <div>
+                                    <div style="font-weight: 500;">FAQs</div>
+                                    <div style="font-size: 0.85rem; color: var(--dark-gray);">Frequently asked questions</div>
+                                </div>
+                            </div>
+                            
+                            <div class="preference-item" data-help="contact">
+                                <div class="preference-icon">
+                                    <i class="fas fa-headset"></i>
+                                </div>
+                                <div>
+                                    <div style="font-weight: 500;">Contact Support</div>
+                                    <div style="font-size: 0.85rem; color: var(--dark-gray);">24/7 customer support</div>
+                                </div>
+                            </div>
+                            
+                            <div class="preference-item" data-help="guides">
+                                <div class="preference-icon">
+                                    <i class="fas fa-book"></i>
+                                </div>
+                                <div>
+                                    <div style="font-weight: 500;">User Guides</div>
+                                    <div style="font-size: 0.85rem; color: var(--dark-gray);">How-to guides and tutorials</div>
+                                </div>
+                            </div>
+                            
+                            <div class="preference-item" data-help="feedback">
+                                <div class="preference-icon">
+                                    <i class="fas fa-comment-alt"></i>
+                                </div>
+                                <div>
+                                    <div style="font-weight: 500;">Send Feedback</div>
+                                    <div style="font-size: 0.85rem; color: var(--dark-gray);">Share your suggestions</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="profile-card" style="margin-top: 30px;">
+                            <div class="profile-card-title">Contact Information</div>
+                            <div class="profile-card-content">
+                                <p><strong>Customer Support:</strong> 01-4221234</p>
+                                <p><strong>Email:</strong> support@krishibazaar.np</p>
+                                <p><strong>Business Hours:</strong> 9 AM - 6 PM, Sunday - Friday</p>
+                                <p style="margin-top: 15px;">
+                                    <button class="btn-primary" id="contact-support-btn">
+                                        <i class="fas fa-headset"></i> Start Live Chat
+                                    </button>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- Success Modal -->
+    <div id="success-modal" class="modal" style="display: none;">
+        <div class="modal-content" style="max-width: 400px; text-align: center;">
+            <div class="modal-header">
+                <h2>Success!</h2>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div style="padding: 20px;">
+                    <i class="fas fa-check-circle" style="font-size: 3rem; color: var(--primary-green); margin-bottom: 20px;"></i>
+                    <h3 id="success-message">Profile updated successfully!</h3>
+                    <p id="success-description">Your changes have been saved.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Profile Page JavaScript
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check login
+            const currentUser = JSON.parse(sessionStorage.getItem('currentUser'));
+            if (!currentUser) {
+                window.location.href = 'index.html';
+                return;
+            }
+            
+            // Initialize profile page
+            initProfilePage(currentUser);
+            
+            // Load profile data
+            loadProfileData(currentUser);
+            
+            // Setup event listeners
+            setupProfileEventListeners();
+        });
+        
+        function initProfilePage(user) {
+            // Update user info in sidebar and topbar
+            updateUserInfo(user);
+            
+            // Update notification badge
+            updateNotificationBadge();
+        }
+        
+        function updateUserInfo(user) {
+            // Update avatar elements
+            const avatarElements = document.querySelectorAll('.user-avatar, #profile-avatar-large');
+            const usernameElements = document.querySelectorAll('#sidebar-username, #top-username, #profile-name');
+            const locationElement = document.getElementById('profile-location');
+            
+            // Generate initials from name
+            const initials = user.name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
+            
+            // Update avatars
+            avatarElements.forEach(el => {
+                el.textContent = initials;
+            });
+            
+            // Update usernames
+            usernameElements.forEach(el => {
+                if (el) el.textContent = user.name;
+            });
+            
+            // Update location
+            if (locationElement && user.location) {
+                locationElement.textContent = user.location;
+            }
+            
+            // Update sidebar role
+            const sidebarRole = document.getElementById('sidebar-role');
+            if (sidebarRole) {
+                sidebarRole.textContent = user.type === 'farmer' ? 'Farmer' : 'Customer';
+            }
+            
+            // Update stats from sessionStorage
+            updateProfileStats();
+        }
+        
+        function updateNotificationBadge() {
+            const notificationCount = parseInt(sessionStorage.getItem('notificationCount') || '3');
+            const badge = document.getElementById('topbar-notification-count');
+            
+            if (badge) {
+                if (notificationCount > 0) {
+                    badge.textContent = notificationCount > 99 ? '99+' : notificationCount;
+                    badge.style.display = 'flex';
+                } else {
+                    badge.style.display = 'none';
+                }
+            }
+        }
+        
+        function updateProfileStats() {
+            // Get stats from sessionStorage or use defaults
+            const ordersCount = sessionStorage.getItem('orderCount') || '5';
+            const cartItemsCount = sessionStorage.getItem('cartCount') || '3';
+            
+            document.getElementById('stat-orders').textContent = ordersCount;
+            document.getElementById('stat-cart').textContent = cartItemsCount;
+        }
+        
+        function loadProfileData(user) {
+            // Load user data into form fields
+            document.getElementById('first-name').value = user.name.split(' ')[0] || '';
+            document.getElementById('last-name').value = user.name.split(' ').slice(1).join(' ') || '';
+            document.getElementById('email').value = user.email || '';
+            document.getElementById('phone').value = user.phone || '';
+            
+            // Set district if available
+            if (user.district) {
+                const districtSelect = document.getElementById('district');
+                const option = Array.from(districtSelect.options).find(opt => 
+                    opt.text.toLowerCase().includes(user.district.toLowerCase())
+                );
+                if (option) {
+                    districtSelect.value = option.value;
+                }
+            }
+            
+            // Load activity data
+            loadActivityData();
+        }
+        
+        function loadActivityData() {
+            const activityList = document.getElementById('activity-list');
+            
+            // Sample activity data
+            const activities = [
+                {
+                    id: 1,
+                    icon: 'fas fa-shopping-cart',
+                    title: 'Order Placed',
+                    description: 'Order ORD-1025 placed successfully',
+                    time: '2 hours ago'
+                },
+                {
+                    id: 2,
+                    icon: 'fas fa-comment',
+                    title: 'New Message',
+                    description: 'Received a message from Ram Shrestha',
+                    time: '1 day ago'
+                },
+                {
+                    id: 3,
+                    icon: 'fas fa-user-edit',
+                    title: 'Profile Updated',
+                    description: 'Updated your personal information',
+                    time: '2 days ago'
+                },
+                {
+                    id: 4,
+                    icon: 'fas fa-star',
+                    title: 'Product Reviewed',
+                    description: 'Rated Organic Tomatoes 5 stars',
+                    time: '3 days ago'
+                },
+                {
+                    id: 5,
+                    icon: 'fas fa-map-marker-alt',
+                    title: 'Location Updated',
+                    description: 'Changed your default delivery location',
+                    time: '1 week ago'
+                }
+            ];
+            
+            activityList.innerHTML = '';
+            
+            activities.forEach(activity => {
+                const activityItem = document.createElement('div');
+                activityItem.className = 'activity-item';
+                activityItem.innerHTML = `
+                    <div class="activity-icon">
+                        <i class="${activity.icon}"></i>
+                    </div>
+                    <div class="activity-content">
+                        <div class="activity-title">${activity.title}</div>
+                        <div class="activity-description">${activity.description}</div>
+                        <div class="activity-time">${activity.time}</div>
+                    </div>
+                `;
+                activityList.appendChild(activityItem);
+            });
+        }
+        
+        function setupProfileEventListeners() {
+            // Notification icon click
+            const notificationIcon = document.querySelector('.notification-icon');
+            if (notificationIcon) {
+                notificationIcon.addEventListener('click', function() {
+                    window.location.href = 'Customer-notifications.html';
+                });
+                notificationIcon.style.cursor = 'pointer';
+            }
+            
+            // Profile menu tab switching
+            document.querySelectorAll('.profile-menu a').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    // Get the target tab
+                    const tab = this.getAttribute('data-tab');
+                    
+                    // Update active menu item
+                    document.querySelectorAll('.profile-menu a').forEach(item => {
+                        item.classList.remove('active');
+                    });
+                    this.classList.add('active');
+                    
+                    // Show corresponding section
+                    document.querySelectorAll('.profile-section').forEach(section => {
+                        section.classList.remove('active');
+                    });
+                    document.getElementById(`${tab}-section`).classList.add('active');
+                });
+            });
+            
+            // Change avatar button
+            document.getElementById('change-avatar-btn').addEventListener('click', function() {
+                document.getElementById('avatar-upload').click();
+            });
+            
+            // Avatar upload
+            document.getElementById('avatar-upload').addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    if (file.size > 2 * 1024 * 1024) {
+                        alert('File size must be less than 2MB');
+                        return;
+                    }
+                    
+                    const reader = new FileReader();
+                    reader.onload = function(event) {
+                        const avatarPreview = document.getElementById('avatar-preview');
+                        avatarPreview.innerHTML = `<img src="${event.target.result}" alt="Profile Picture">`;
+                        
+                        // Update all avatars
+                        document.querySelectorAll('.user-avatar, #profile-avatar-large').forEach(avatar => {
+                            avatar.innerHTML = `<img src="${event.target.result}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`;
+                        });
+                        
+                        // Save to sessionStorage
+                        sessionStorage.setItem('profileAvatar', event.target.result);
+                        
+                        showSuccess('Profile picture updated successfully!', 'Your new profile picture has been saved.');
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+            
+            // Save personal info
+            document.getElementById('save-personal').addEventListener('click', function() {
+                savePersonalInfo();
+            });
+            
+            // Cancel personal info
+            document.getElementById('cancel-personal').addEventListener('click', function() {
+                // Reload original data
+                const currentUser = JSON.parse(sessionStorage.getItem('currentUser'));
+                loadProfileData(currentUser);
+            });
+            
+            // Preference selection
+            document.querySelectorAll('.preference-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    this.classList.toggle('selected');
+                });
+            });
+            
+            // Save preferences
+            document.getElementById('save-preferences').addEventListener('click', function() {
+                savePreferences();
+            });
+            
+            // Change password button
+            document.getElementById('change-password-btn').addEventListener('click', function() {
+                document.getElementById('change-password-form').style.display = 'block';
+            });
+            
+            // Cancel password change
+            document.getElementById('cancel-password').addEventListener('click', function() {
+                document.getElementById('change-password-form').style.display = 'none';
+                document.getElementById('current-password').value = '';
+                document.getElementById('new-password').value = '';
+                document.getElementById('confirm-new-password').value = '';
+            });
+            
+            // Save password
+            document.getElementById('save-password').addEventListener('click', function() {
+                changePassword();
+            });
+            
+            // Security buttons
+            document.getElementById('enable-2fa').addEventListener('click', function() {
+                alert('Two-Factor Authentication setup will be available soon.');
+            });
+            
+            document.getElementById('view-login-history').addEventListener('click', function() {
+                alert('Login history feature coming soon.');
+            });
+            
+            document.getElementById('manage-devices').addEventListener('click', function() {
+                alert('Device management feature coming soon.');
+            });
+            
+            // Help buttons
+            document.querySelectorAll('.preference-item[data-help]').forEach(item => {
+                item.addEventListener('click', function() {
+                    const helpType = this.getAttribute('data-help');
+                    switch(helpType) {
+                        case 'faq':
+                            alert('FAQs page will open in a new window.');
+                            break;
+                        case 'contact':
+                            alert('Contact support page will open.');
+                            break;
+                        case 'guides':
+                            alert('User guides will be displayed.');
+                            break;
+                        case 'feedback':
+                            showFeedbackForm();
+                            break;
+                    }
+                });
+            });
+            
+            // Contact support button
+            document.getElementById('contact-support-btn').addEventListener('click', function() {
+                alert('Live chat feature coming soon. For now, please call 01-4221234 or email support@krishibazaar.np');
+            });
+            
+            // Global search
+            document.getElementById('global-search').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    const searchTerm = this.value.trim();
+                    if (searchTerm) {
+                        searchProfile(searchTerm);
+                    }
+                }
+            });
+            
+            // Logout button
+            document.getElementById('logout-btn').addEventListener('click', function() {
+                logoutUser();
+            });
+            
+            // Close modal
+            document.addEventListener('click', function(e) {
+                if (e.target.classList.contains('close-modal') || 
+                    e.target.classList.contains('modal')) {
+                    closeSuccessModal();
+                }
+            });
+            
+            // Escape key to close modal
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    closeSuccessModal();
+                }
+            });
+        }
+        
+        function savePersonalInfo() {
+            const firstName = document.getElementById('first-name').value.trim();
+            const lastName = document.getElementById('last-name').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const phone = document.getElementById('phone').value.trim();
+            const district = document.getElementById('district').value;
+            const municipality = document.getElementById('municipality').value.trim();
+            const address = document.getElementById('address').value.trim();
+            
+            // Validation
+            let isValid = true;
+            
+            if (!firstName || !lastName) {
+                alert('Please enter your full name');
+                isValid = false;
+            }
+            
+            if (!email || !isValidEmail(email)) {
+                alert('Please enter a valid email address');
+                isValid = false;
+            }
+            
+            if (!phone) {
+                alert('Please enter your phone number');
+                isValid = false;
+            }
+            
+            if (!district) {
+                alert('Please select your district');
+                isValid = false;
+            }
+            
+            if (!isValid) return;
+            
+            // Get current user
+            const currentUser = JSON.parse(sessionStorage.getItem('currentUser'));
+            
+            // Update user data
+            currentUser.name = `${firstName} ${lastName}`;
+            currentUser.email = email;
+            currentUser.phone = phone;
+            currentUser.district = district;
+            currentUser.location = `${municipality}, ${getDistrictName(district)}`;
+            
+            // Save updated user
+            sessionStorage.setItem('currentUser', JSON.stringify(currentUser));
+            
+            // Update UI
+            updateUserInfo(currentUser);
+            
+            // Show success message
+            showSuccess('Profile updated successfully!', 'Your personal information has been saved.');
+            
+            // Add activity
+            addActivity('fas fa-user-edit', 'Profile Updated', 'Updated your personal information');
+        }
+        
+        function savePreferences() {
+            // Get selected preferences
+            const selectedPreferences = [];
+            document.querySelectorAll('.preference-item.selected').forEach(item => {
+                const pref = item.getAttribute('data-pref') || item.getAttribute('data-category');
+                if (pref) selectedPreferences.push(pref);
+            });
+            
+            // Save to sessionStorage
+            sessionStorage.setItem('userPreferences', JSON.stringify(selectedPreferences));
+            
+            // Show success message
+            showSuccess('Preferences saved!', 'Your preferences have been updated.');
+            
+            // Add activity
+            addActivity('fas fa-cog', 'Preferences Updated', 'Changed your notification and product preferences');
+        }
+        
+        function changePassword() {
+            const currentPassword = document.getElementById('current-password').value;
+            const newPassword = document.getElementById('new-password').value;
+            const confirmNewPassword = document.getElementById('confirm-new-password').value;
+            
+            // Validation
+            if (!currentPassword || !newPassword || !confirmNewPassword) {
+                alert('Please fill in all password fields');
+                return;
+            }
+            
+            if (newPassword.length < 6) {
+                alert('New password must be at least 6 characters long');
+                return;
+            }
+            
+            if (newPassword !== confirmNewPassword) {
+                alert('New passwords do not match');
+                return;
+            }
+            
+            // In a real app, this would verify current password with server
+            // For demo, we'll just accept it
+            
+            // Hide password form
+            document.getElementById('change-password-form').style.display = 'none';
+            
+            // Clear fields
+            document.getElementById('current-password').value = '';
+            document.getElementById('new-password').value = '';
+            document.getElementById('confirm-new-password').value = '';
+            
+            // Show success message
+            showSuccess('Password changed!', 'Your password has been updated successfully.');
+            
+            // Add activity
+            addActivity('fas fa-key', 'Password Changed', 'Updated your account password');
+        }
+        
+        function showFeedbackForm() {
+            const feedback = prompt('Please share your feedback or suggestions:');
+            if (feedback && feedback.trim()) {
+                alert('Thank you for your feedback! We appreciate your input.');
+                addActivity('fas fa-comment-alt', 'Feedback Sent', 'Submitted feedback to Krishi Bazaar');
+            }
+        }
+        
+        function searchProfile(searchTerm) {
+            // This would search through profile data
+            alert(`Searching for: ${searchTerm}\n\nThis would search through your profile data.`);
+        }
+        
+        function getDistrictName(districtValue) {
+            const districtSelect = document.getElementById('district');
+            const selectedOption = districtSelect.options[districtSelect.selectedIndex];
+            return selectedOption ? selectedOption.text : 'Unknown District';
+        }
+        
+        function isValidEmail(email) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailRegex.test(email);
+        }
+        
+        function showSuccess(title, description) {
+            const modal = document.getElementById('success-modal');
+            document.getElementById('success-message').textContent = title;
+            document.getElementById('success-description').textContent = description;
+            modal.style.display = 'block';
+            
+            // Auto-close after 3 seconds
+            setTimeout(() => {
+                closeSuccessModal();
+            }, 3000);
+        }
+        
+        function closeSuccessModal() {
+            document.getElementById('success-modal').style.display = 'none';
+        }
+        
+        function addActivity(icon, title, description) {
+            // Get current activities
+            const activityList = document.getElementById('activity-list');
+            
+            // Create new activity item
+            const activityItem = document.createElement('div');
+            activityItem.className = 'activity-item';
+            activityItem.innerHTML = `
+                <div class="activity-icon">
+                    <i class="${icon}"></i>
+                </div>
+                <div class="activity-content">
+                    <div class="activity-title">${title}</div>
+                    <div class="activity-description">${description}</div>
+                    <div class="activity-time">Just now</div>
+                </div>
+            `;
+            
+            // Add to top of list
+            activityList.insertBefore(activityItem, activityList.firstChild);
+            
+            // Limit to 10 items
+            const items = activityList.querySelectorAll('.activity-item');
+            if (items.length > 10) {
+                activityList.removeChild(items[items.length - 1]);
+            }
+        }
+        
+        function logoutUser() {
+            // Clear session data
+            sessionStorage.removeItem('currentUser');
+            sessionStorage.removeItem('userType');
+            sessionStorage.removeItem('isLoggedIn');
+            sessionStorage.removeItem('notificationCount');
+            sessionStorage.removeItem('cart');
+            sessionStorage.removeItem('userPreferences');
+            sessionStorage.removeItem('profileAvatar');
+            
+            // Redirect to login page
+            window.location.href = 'index.html';
+        }
+    </script>
+</body>
+</html>

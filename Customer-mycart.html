@@ -1,0 +1,1187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Cart - Krishi Bazaar</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        /* Cart Specific Styles */
+        .cart-header {
+            background: linear-gradient(135deg, #FF5722, #D84315);
+            color: white;
+            padding: 30px;
+            border-radius: var(--border-radius);
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .cart-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" opacity="0.1"><path d="M30,20 L70,20 L80,40 L20,40 Z" fill="white"/><circle cx="30" cy="65" r="15" fill="white"/><circle cx="70" cy="65" r="15" fill="white"/></svg>');
+            background-size: 100px;
+        }
+        
+        .cart-container {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+        }
+        
+        .cart-items-container {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 25px;
+        }
+        
+        .cart-item {
+            display: grid;
+            grid-template-columns: auto 2fr 1fr 1fr auto;
+            gap: 20px;
+            align-items: center;
+            padding: 20px 0;
+            border-bottom: 1px solid var(--light-gray);
+        }
+        
+        .cart-item:last-child {
+            border-bottom: none;
+        }
+        
+        .cart-item-image {
+            width: 80px;
+            height: 80px;
+            border-radius: 10px;
+            background: linear-gradient(45deg, #f0f7f0, #e8f5e9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .cart-item-image i {
+            font-size: 2rem;
+            color: var(--primary-green);
+        }
+        
+        .cart-item-info h3 {
+            margin-bottom: 8px;
+            color: var(--text-dark);
+        }
+        
+        .cart-item-farmer {
+            color: var(--dark-gray);
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+        }
+        
+        .cart-item-location {
+            color: var(--primary-green);
+            font-size: 0.85rem;
+        }
+        
+        .cart-item-price {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+        
+        .cart-item-quantity {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .quantity-btn {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: var(--light-gray);
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        
+        .quantity-btn:hover {
+            background: var(--medium-gray);
+        }
+        
+        .quantity-input {
+            width: 50px;
+            text-align: center;
+            padding: 5px;
+            border: 1px solid var(--medium-gray);
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+        }
+        
+        .cart-item-remove {
+            color: #F44336;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: color 0.3s ease;
+        }
+        
+        .cart-item-remove:hover {
+            color: #D32F2F;
+        }
+        
+        .empty-cart {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--dark-gray);
+        }
+        
+        .empty-cart i {
+            font-size: 4rem;
+            color: #e0e0e0;
+            margin-bottom: 20px;
+        }
+        
+        /* Order Summary */
+        .order-summary {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 25px;
+            height: fit-content;
+            position: sticky;
+            top: 20px;
+        }
+        
+        .summary-title {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: var(--text-dark);
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--light-gray);
+        }
+        
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            color: var(--dark-gray);
+        }
+        
+        .summary-row.total {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            border-top: 2px solid var(--medium-gray);
+            padding-top: 15px;
+            margin-top: 15px;
+        }
+        
+        .summary-row.discount {
+            color: var(--primary-green);
+        }
+        
+        .coupon-section {
+            margin: 20px 0;
+            padding: 15px;
+            background: var(--light-gray);
+            border-radius: var(--border-radius);
+        }
+        
+        .coupon-input {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .coupon-input input {
+            flex: 1;
+            padding: 10px 15px;
+            border: 1px solid var(--medium-gray);
+            border-radius: var(--border-radius);
+        }
+        
+        .delivery-options {
+            margin: 20px 0;
+        }
+        
+        .delivery-option {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+            padding: 10px;
+            border: 1px solid var(--medium-gray);
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .delivery-option:hover {
+            border-color: var(--primary-green);
+        }
+        
+        .delivery-option.selected {
+            border-color: var(--primary-green);
+            background: rgba(76, 175, 80, 0.05);
+        }
+        
+        .delivery-details {
+            font-size: 0.9rem;
+            color: var(--dark-gray);
+        }
+        
+        .checkout-btn {
+            width: 100%;
+            padding: 15px;
+            font-size: 1.1rem;
+            margin-top: 20px;
+        }
+        
+        .continue-shopping {
+            text-align: center;
+            margin-top: 15px;
+            color: var(--dark-gray);
+        }
+        
+        .cart-actions {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid var(--light-gray);
+        }
+        
+        @media (max-width: 992px) {
+            .cart-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .order-summary {
+                position: static;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .cart-header {
+                padding: 20px;
+            }
+            
+            .cart-item {
+                grid-template-columns: 1fr;
+                text-align: center;
+                gap: 15px;
+            }
+            
+            .cart-item-image {
+                margin: 0 auto;
+            }
+            
+            .cart-item-quantity {
+                justify-content: center;
+            }
+            
+            .cart-actions {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .cart-actions button {
+                width: 100%;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .cart-items-container {
+                padding: 15px;
+            }
+            
+            .order-summary {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2><i class="fas fa-seedling"></i> <span>Krishi Bazaar</span></h2>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="customer-dashboard.html" data-page="dashboard"><i class="fas fa-tachometer-alt"></i> <span>Dashboard</span></a></li>
+                    <li><a href="Customer-marketplace.html" data-page="marketplace"><i class="fas fa-store"></i> <span>Marketplace</span></a></li>
+                    <li><a href="Customer-myorders.html" data-page="orders"><i class="fas fa-shopping-cart"></i> <span>My Orders</span></a></li>
+                    <li><a href="Customer-messages.html" data-page="messages"><i class="fas fa-comments"></i> <span>Messages</span></a></li>
+                    <li><a href="Customer-mycart.html" class="active" data-page="cart"><i class="fas fa-shopping-basket"></i> <span>My Cart</span></a></li>
+                    <li><a href="Customer-nepalmap.html" data-page="map"><i class="fas fa-map"></i> <span>Nepal Map</span></a></li>
+                    <li><a href="Customer-myprofile.html" data-page="profile"><i class="fas fa-user"></i> <span>My Profile</span></a></li>
+                    <li><a href="Customer-notifications.html" data-page="notifications"><i class="fas fa-bell"></i> <span>Notifications</span></a></li>
+                </ul>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <div class="user-avatar" id="sidebar-avatar">AD</div>
+                    <div>
+                        <h4 id="sidebar-username">Avash Dhakal</h4>
+                        <p id="sidebar-role">Customer</p>
+                    </div>
+                </div>
+                <button class="btn-secondary logout-btn" id="logout-btn">Logout</button>
+            </div>
+        </aside>
+        
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Topbar -->
+            <div class="topbar">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="global-search" placeholder="Search products...">
+                </div>
+                <div class="topbar-actions">
+                    <div class="notification-icon">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-badge" id="topbar-notification-count">1</span>
+                    </div>
+                    <div class="user-info">
+                        <div class="user-avatar" id="top-avatar">AD</div>
+                        <span id="top-username">Avash Dhakal</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Cart Header -->
+            <div class="cart-header">
+                <h1 class="page-title">My Cart</h1>
+                <p>Review your items and proceed to checkout</p>
+            </div>
+            
+            <!-- Cart Container -->
+            <div class="cart-container">
+                <!-- Cart Items -->
+                <div class="cart-items-container">
+                    <h2 style="margin-bottom: 20px; color: var(--text-dark);">Shopping Cart</h2>
+                    
+                    <div id="cart-items-list">
+                        <!-- Cart items will be loaded here -->
+                    </div>
+                    
+                    <!-- Empty Cart State -->
+                    <div id="empty-cart" class="empty-cart" style="display: none;">
+                        <i class="fas fa-shopping-basket"></i>
+                        <h3>Your cart is empty</h3>
+                        <p>Add items from the marketplace to get started</p>
+                        <a href="Customer-marketplace.html" class="btn-primary" style="margin-top: 20px;">
+                            <i class="fas fa-store"></i> Browse Marketplace
+                        </a>
+                    </div>
+                    
+                    <!-- Cart Actions -->
+                    <div class="cart-actions" id="cart-actions" style="display: none;">
+                        <button class="btn-outline" id="clear-cart">
+                            <i class="fas fa-trash"></i> Clear Cart
+                        </button>
+                        <button class="btn-primary" id="update-cart">
+                            <i class="fas fa-sync"></i> Update Cart
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Order Summary -->
+                <div class="order-summary">
+                    <h2 class="summary-title">Order Summary</h2>
+                    
+                    <div id="order-summary-details">
+                        <div class="summary-row">
+                            <span>Subtotal</span>
+                            <span id="subtotal">NPR 0</span>
+                        </div>
+                        <div class="summary-row">
+                            <span>Delivery Fee</span>
+                            <span id="delivery-fee">NPR 0</span>
+                        </div>
+                        <div class="summary-row discount">
+                            <span>Discount</span>
+                            <span id="discount">-NPR 0</span>
+                        </div>
+                        <div class="summary-row total">
+                            <span>Total</span>
+                            <span id="total-amount">NPR 0</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Coupon Section -->
+                    <div class="coupon-section">
+                        <div style="font-weight: 500; color: var(--text-dark);">
+                            <i class="fas fa-tag"></i> Apply Coupon
+                        </div>
+                        <div class="coupon-input">
+                            <input type="text" id="coupon-code" placeholder="Enter coupon code">
+                            <button class="btn-outline" id="apply-coupon">Apply</button>
+                        </div>
+                        <div id="coupon-message" style="font-size: 0.9rem; margin-top: 10px;"></div>
+                    </div>
+                    
+                    <!-- Delivery Options -->
+                    <div class="delivery-options">
+                        <div style="font-weight: 500; color: var(--text-dark); margin-bottom: 15px;">
+                            <i class="fas fa-truck"></i> Delivery Options
+                        </div>
+                        
+                        <div class="delivery-option selected" data-delivery="standard">
+                            <input type="radio" name="delivery" id="standard-delivery" checked>
+                            <div style="flex: 1;">
+                                <div style="font-weight: 500;">Standard Delivery</div>
+                                <div class="delivery-details">3-5 business days • NPR 50</div>
+                            </div>
+                        </div>
+                        
+                        <div class="delivery-option" data-delivery="express">
+                            <input type="radio" name="delivery" id="express-delivery">
+                            <div style="flex: 1;">
+                                <div style="font-weight: 500;">Express Delivery</div>
+                                <div class="delivery-details">1-2 business days • NPR 150</div>
+                            </div>
+                        </div>
+                        
+                        <div class="delivery-option" data-delivery="pickup">
+                            <input type="radio" name="delivery" id="pickup-delivery">
+                            <div style="flex: 1;">
+                                <div style="font-weight: 500;">Farmer's Pickup</div>
+                                <div class="delivery-details">Pickup from farmer • NPR 0</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Checkout Button -->
+                    <button class="btn-primary checkout-btn" id="checkout-btn">
+                        <i class="fas fa-shopping-bag"></i> Proceed to Checkout
+                    </button>
+                    
+                    <div class="continue-shopping">
+                        <a href="Customer-marketplace.html" style="color: var(--primary-green);">
+                            <i class="fas fa-arrow-left"></i> Continue Shopping
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- Checkout Modal -->
+    <div id="checkout-modal" class="modal" style="display: none;">
+        <div class="modal-content" style="max-width: 800px;">
+            <div class="modal-header">
+                <h2>Checkout</h2>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="checkout-content">
+                    <!-- Checkout steps will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // My Cart JavaScript
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check login
+            const currentUser = JSON.parse(sessionStorage.getItem('currentUser'));
+            if (!currentUser) {
+                window.location.href = 'index.html';
+                return;
+            }
+            
+            // Initialize cart page
+            initCartPage(currentUser);
+            
+            // Load cart items
+            loadCart();
+            
+            // Setup event listeners
+            setupCartEventListeners();
+        });
+        
+        function initCartPage(user) {
+            // Update user info
+            updateUserInfo(user);
+            
+            // Update notification badge
+            updateNotificationBadge();
+        }
+        
+        function updateUserInfo(user) {
+            const avatarElements = document.querySelectorAll('.user-avatar');
+            const usernameElements = document.querySelectorAll('#sidebar-username, #top-username');
+            
+            const initials = user.name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
+            
+            avatarElements.forEach(el => {
+                el.textContent = initials;
+            });
+            
+            usernameElements.forEach(el => {
+                if (el) el.textContent = user.name;
+            });
+            
+            // Update sidebar role
+            const sidebarRole = document.getElementById('sidebar-role');
+            if (sidebarRole) {
+                sidebarRole.textContent = user.type === 'farmer' ? 'Farmer' : 'Customer';
+            }
+        }
+        
+        function updateNotificationBadge() {
+            const notificationCount = parseInt(sessionStorage.getItem('notificationCount') || '1');
+            const badge = document.getElementById('topbar-notification-count');
+            
+            if (badge) {
+                if (notificationCount > 0) {
+                    badge.textContent = notificationCount > 99 ? '99+' : notificationCount;
+                    badge.style.display = 'flex';
+                } else {
+                    badge.style.display = 'none';
+                }
+            }
+        }
+        
+        // Cart data structure
+        let cartData = JSON.parse(sessionStorage.getItem('cart')) || [
+            {
+                id: 1,
+                name: 'Organic Tomatoes',
+                price: 'NPR 80',
+                farmer: 'Ram Shrestha',
+                location: 'Kathmandu',
+                quantity: 2,
+                unit: 'kg',
+                imageIcon: 'fas fa-seedling'
+            },
+            {
+                id: 2,
+                name: 'Fresh Mangoes',
+                price: 'NPR 150',
+                farmer: 'Sita Kumari',
+                location: 'Pokhara',
+                quantity: 3,
+                unit: 'kg',
+                imageIcon: 'fas fa-apple-alt'
+            },
+            {
+                id: 3,
+                name: 'Basmati Rice',
+                price: 'NPR 180',
+                farmer: 'Hari Prasad',
+                location: 'Chitwan',
+                quantity: 1,
+                unit: 'kg',
+                imageIcon: 'fas fa-seedling'
+            }
+        ];
+        
+        function loadCart() {
+            const cartList = document.getElementById('cart-items-list');
+            const emptyCart = document.getElementById('empty-cart');
+            const cartActions = document.getElementById('cart-actions');
+            
+            if (cartData.length === 0) {
+                cartList.innerHTML = '';
+                emptyCart.style.display = 'block';
+                cartActions.style.display = 'none';
+                updateOrderSummary();
+                return;
+            }
+            
+            emptyCart.style.display = 'none';
+            cartActions.style.display = 'flex';
+            
+            cartList.innerHTML = '';
+            
+            cartData.forEach((item, index) => {
+                const totalPrice = parseFloat(item.price.replace('NPR ', '')) * item.quantity;
+                
+                const cartItem = document.createElement('div');
+                cartItem.className = 'cart-item';
+                cartItem.setAttribute('data-item-id', item.id);
+                
+                cartItem.innerHTML = `
+                    <div class="cart-item-image">
+                        <i class="${item.imageIcon}"></i>
+                    </div>
+                    <div class="cart-item-info">
+                        <h3>${item.name}</h3>
+                        <div class="cart-item-farmer">Farmer: ${item.farmer}</div>
+                        <div class="cart-item-location">
+                            <i class="fas fa-map-marker-alt"></i> ${item.location}
+                        </div>
+                    </div>
+                    <div class="cart-item-price">NPR ${totalPrice.toFixed(0)}</div>
+                    <div class="cart-item-quantity">
+                        <button class="quantity-btn decrease-btn" data-index="${index}">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                        <input type="number" class="quantity-input" value="${item.quantity}" min="1" max="99" data-index="${index}">
+                        <button class="quantity-btn increase-btn" data-index="${index}">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                    </div>
+                    <button class="cart-item-remove remove-btn" data-index="${index}">
+                        <i class="fas fa-times"></i>
+                    </button>
+                `;
+                
+                cartList.appendChild(cartItem);
+            });
+            
+            updateOrderSummary();
+        }
+        
+        function updateOrderSummary() {
+            let subtotal = 0;
+            
+            cartData.forEach(item => {
+                const price = parseFloat(item.price.replace('NPR ', ''));
+                subtotal += price * item.quantity;
+            });
+            
+            // Get delivery option
+            const deliveryOption = document.querySelector('.delivery-option.selected');
+            let deliveryFee = 0;
+            
+            if (deliveryOption) {
+                const option = deliveryOption.getAttribute('data-delivery');
+                switch(option) {
+                    case 'standard':
+                        deliveryFee = 50;
+                        break;
+                    case 'express':
+                        deliveryFee = 150;
+                        break;
+                    case 'pickup':
+                        deliveryFee = 0;
+                        break;
+                }
+            }
+            
+            // Calculate discount (if any)
+            const discount = sessionStorage.getItem('cartDiscount') || 0;
+            const discountAmount = parseFloat(discount);
+            
+            // Calculate total
+            const total = subtotal + deliveryFee - discountAmount;
+            
+            // Update UI
+            document.getElementById('subtotal').textContent = `NPR ${subtotal.toFixed(0)}`;
+            document.getElementById('delivery-fee').textContent = `NPR ${deliveryFee.toFixed(0)}`;
+            document.getElementById('discount').textContent = `-NPR ${discountAmount.toFixed(0)}`;
+            document.getElementById('total-amount').textContent = `NPR ${total.toFixed(0)}`;
+            
+            // Update cart count in sessionStorage (for dashboard)
+            sessionStorage.setItem('cartCount', cartData.length.toString());
+        }
+        
+        function setupCartEventListeners() {
+            // Notification icon click
+            const notificationIcon = document.querySelector('.notification-icon');
+            if (notificationIcon) {
+                notificationIcon.addEventListener('click', function() {
+                    window.location.href = 'Customer-notifications.html';
+                });
+                notificationIcon.style.cursor = 'pointer';
+            }
+            
+            // Quantity buttons
+            document.addEventListener('click', function(e) {
+                // Increase quantity
+                if (e.target.closest('.increase-btn')) {
+                    const index = e.target.closest('.increase-btn').getAttribute('data-index');
+                    increaseQuantity(index);
+                }
+                
+                // Decrease quantity
+                if (e.target.closest('.decrease-btn')) {
+                    const index = e.target.closest('.decrease-btn').getAttribute('data-index');
+                    decreaseQuantity(index);
+                }
+                
+                // Remove item
+                if (e.target.closest('.remove-btn')) {
+                    const index = e.target.closest('.remove-btn').getAttribute('data-index');
+                    removeItem(index);
+                }
+                
+                // Delivery option selection
+                if (e.target.closest('.delivery-option')) {
+                    const deliveryOption = e.target.closest('.delivery-option');
+                    document.querySelectorAll('.delivery-option').forEach(opt => {
+                        opt.classList.remove('selected');
+                    });
+                    deliveryOption.classList.add('selected');
+                    updateOrderSummary();
+                }
+            });
+            
+            // Quantity input changes
+            document.addEventListener('input', function(e) {
+                if (e.target.classList.contains('quantity-input')) {
+                    const index = e.target.getAttribute('data-index');
+                    const newQuantity = parseInt(e.target.value) || 1;
+                    updateQuantity(index, newQuantity);
+                }
+            });
+            
+            // Clear cart button
+            document.getElementById('clear-cart').addEventListener('click', function() {
+                clearCart();
+            });
+            
+            // Update cart button
+            document.getElementById('update-cart').addEventListener('click', function() {
+                updateCart();
+            });
+            
+            // Apply coupon button
+            document.getElementById('apply-coupon').addEventListener('click', function() {
+                applyCoupon();
+            });
+            
+            // Checkout button
+            document.getElementById('checkout-btn').addEventListener('click', function() {
+                proceedToCheckout();
+            });
+            
+            // Global search
+            document.getElementById('global-search').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    const searchTerm = this.value.trim();
+                    if (searchTerm) {
+                        searchProducts(searchTerm);
+                    }
+                }
+            });
+            
+            // Logout button
+            document.getElementById('logout-btn').addEventListener('click', function() {
+                logoutUser();
+            });
+            
+            // Close modal
+            document.addEventListener('click', function(e) {
+                if (e.target.classList.contains('close-modal') || 
+                    e.target.classList.contains('modal')) {
+                    closeCheckoutModal();
+                }
+            });
+            
+            // Enter key for coupon
+            document.getElementById('coupon-code').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    applyCoupon();
+                }
+            });
+        }
+        
+        function increaseQuantity(index) {
+            if (cartData[index]) {
+                cartData[index].quantity++;
+                updateCartInStorage();
+                loadCart();
+            }
+        }
+        
+        function decreaseQuantity(index) {
+            if (cartData[index] && cartData[index].quantity > 1) {
+                cartData[index].quantity--;
+                updateCartInStorage();
+                loadCart();
+            }
+        }
+        
+        function updateQuantity(index, quantity) {
+            if (cartData[index] && quantity >= 1 && quantity <= 99) {
+                cartData[index].quantity = quantity;
+                updateCartInStorage();
+                loadCart();
+            }
+        }
+        
+        function removeItem(index) {
+            if (cartData[index]) {
+                const itemName = cartData[index].name;
+                cartData.splice(index, 1);
+                updateCartInStorage();
+                loadCart();
+                showNotification(`${itemName} removed from cart`);
+            }
+        }
+        
+        function clearCart() {
+            if (cartData.length === 0) return;
+            
+            if (confirm('Are you sure you want to clear your cart?')) {
+                cartData = [];
+                updateCartInStorage();
+                loadCart();
+                showNotification('Cart cleared successfully');
+            }
+        }
+        
+        function updateCart() {
+            // This would typically sync with server
+            updateCartInStorage();
+            showNotification('Cart updated successfully');
+        }
+        
+        function updateCartInStorage() {
+            sessionStorage.setItem('cart', JSON.stringify(cartData));
+        }
+        
+        function applyCoupon() {
+            const couponCode = document.getElementById('coupon-code').value.trim();
+            const messageDiv = document.getElementById('coupon-message');
+            
+            if (!couponCode) {
+                messageDiv.textContent = 'Please enter a coupon code';
+                messageDiv.style.color = '#F44336';
+                return;
+            }
+            
+            // Sample coupon codes
+            const validCoupons = {
+                'WELCOME10': 100, // NPR 100 discount
+                'FRESH20': 200,   // NPR 200 discount
+                'FARMER30': 300   // NPR 300 discount
+            };
+            
+            if (validCoupons[couponCode.toUpperCase()]) {
+                const discount = validCoupons[couponCode.toUpperCase()];
+                sessionStorage.setItem('cartDiscount', discount.toString());
+                sessionStorage.setItem('appliedCoupon', couponCode.toUpperCase());
+                
+                messageDiv.textContent = `Coupon applied! You saved NPR ${discount}`;
+                messageDiv.style.color = 'var(--primary-green)';
+                
+                updateOrderSummary();
+            } else {
+                sessionStorage.removeItem('cartDiscount');
+                sessionStorage.removeItem('appliedCoupon');
+                
+                messageDiv.textContent = 'Invalid coupon code';
+                messageDiv.style.color = '#F44336';
+                
+                updateOrderSummary();
+            }
+        }
+        
+        function proceedToCheckout() {
+            if (cartData.length === 0) {
+                alert('Your cart is empty. Add items before checkout.');
+                return;
+            }
+            
+            showCheckoutModal();
+        }
+        
+        function showCheckoutModal() {
+            const modal = document.getElementById('checkout-modal');
+            const content = document.getElementById('checkout-content');
+            
+            // Calculate totals
+            let subtotal = 0;
+            cartData.forEach(item => {
+                const price = parseFloat(item.price.replace('NPR ', ''));
+                subtotal += price * item.quantity;
+            });
+            
+            const deliveryFee = 50; // Standard delivery
+            const discount = parseFloat(sessionStorage.getItem('cartDiscount') || '0');
+            const total = subtotal + deliveryFee - discount;
+            
+            content.innerHTML = `
+                <div id="checkout-steps">
+                    <!-- Step 1: Review Order -->
+                    <div id="step-review" class="checkout-step active">
+                        <h3 style="margin-bottom: 20px;">Review Your Order</h3>
+                        
+                        <div style="max-height: 300px; overflow-y: auto; margin-bottom: 20px;">
+                            ${cartData.map(item => `
+                                <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--light-gray);">
+                                    <div>
+                                        <div style="font-weight: 500;">${item.name}</div>
+                                        <div style="color: var(--dark-gray); font-size: 0.9rem;">
+                                            ${item.quantity} ${item.unit} • ${item.farmer}
+                                        </div>
+                                    </div>
+                                    <div style="font-weight: 500;">
+                                        NPR ${(parseFloat(item.price.replace('NPR ', '')) * item.quantity).toFixed(0)}
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                        
+                        <div style="background: var(--light-gray); padding: 15px; border-radius: var(--border-radius); margin-bottom: 20px;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                                <span>Subtotal:</span>
+                                <span>NPR ${subtotal.toFixed(0)}</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                                <span>Delivery:</span>
+                                <span>NPR ${deliveryFee.toFixed(0)}</span>
+                            </div>
+                            ${discount > 0 ? `
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 10px; color: var(--primary-green);">
+                                <span>Discount:</span>
+                                <span>-NPR ${discount.toFixed(0)}</span>
+                            </div>
+                            ` : ''}
+                            <div style="display: flex; justify-content: space-between; font-size: 1.2rem; font-weight: 600; border-top: 2px solid var(--medium-gray); padding-top: 10px;">
+                                <span>Total:</span>
+                                <span>NPR ${total.toFixed(0)}</span>
+                            </div>
+                        </div>
+                        
+                        <button class="btn-primary" id="next-to-shipping" style="width: 100%;">
+                            Continue to Shipping
+                        </button>
+                    </div>
+                    
+                    <!-- Step 2: Shipping Information (hidden by default) -->
+                    <div id="step-shipping" class="checkout-step" style="display: none;">
+                        <h3 style="margin-bottom: 20px;">Shipping Information</h3>
+                        
+                        <div style="margin-bottom: 20px;">
+                            <label style="display: block; margin-bottom: 8px; font-weight: 500;">Full Name</label>
+                            <input type="text" id="shipping-name" value="Avash Dhakal" style="width: 100%; padding: 10px; border: 1px solid var(--medium-gray); border-radius: var(--border-radius); margin-bottom: 15px;">
+                            
+                            <label style="display: block; margin-bottom: 8px; font-weight: 500;">Address</label>
+                            <textarea id="shipping-address" rows="3" style="width: 100%; padding: 10px; border: 1px solid var(--medium-gray); border-radius: var(--border-radius); margin-bottom: 15px;">Kathmandu, Nepal</textarea>
+                            
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+                                <div>
+                                    <label style="display: block; margin-bottom: 8px; font-weight: 500;">Phone Number</label>
+                                    <input type="tel" id="shipping-phone" value="+977 98XXXXXXX" style="width: 100%; padding: 10px; border: 1px solid var(--medium-gray); border-radius: var(--border-radius);">
+                                </div>
+                                <div>
+                                    <label style="display: block; margin-bottom: 8px; font-weight: 500;">Email</label>
+                                    <input type="email" id="shipping-email" value="avash@example.com" style="width: 100%; padding: 10px; border: 1px solid var(--medium-gray); border-radius: var(--border-radius);">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div style="display: flex; gap: 10px;">
+                            <button class="btn-outline" id="back-to-review" style="flex: 1;">
+                                <i class="fas fa-arrow-left"></i> Back
+                            </button>
+                            <button class="btn-primary" id="next-to-payment" style="flex: 1;">
+                                Continue to Payment
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Step 3: Payment (hidden by default) -->
+                    <div id="step-payment" class="checkout-step" style="display: none;">
+                        <h3 style="margin-bottom: 20px;">Payment Method</h3>
+                        
+                        <div style="margin-bottom: 20px;">
+                            <div class="delivery-option selected" style="margin-bottom: 10px;" data-payment="cod">
+                                <input type="radio" name="payment" id="cod-payment" checked>
+                                <div style="flex: 1;">
+                                    <div style="font-weight: 500;">Cash on Delivery</div>
+                                    <div class="delivery-details">Pay when you receive the order</div>
+                                </div>
+                            </div>
+                            
+                            <div class="delivery-option" style="margin-bottom: 10px;" data-payment="esewa">
+                                <input type="radio" name="payment" id="esewa-payment">
+                                <div style="flex: 1;">
+                                    <div style="font-weight: 500;">Esewa</div>
+                                    <div class="delivery-details">Pay using Esewa wallet</div>
+                                </div>
+                            </div>
+                            
+                            <div class="delivery-option" style="margin-bottom: 10px;" data-payment="khalti">
+                                <input type="radio" name="payment" id="khalti-payment">
+                                <div style="flex: 1;">
+                                    <div style="font-weight: 500;">Khalti</div>
+                                    <div class="delivery-details">Pay using Khalti wallet</div>
+                                </div>
+                            </div>
+                            
+                            <div class="delivery-option" style="margin-bottom: 10px;" data-payment="card">
+                                <input type="radio" name="payment" id="card-payment">
+                                <div style="flex: 1;">
+                                    <div style="font-weight: 500;">Credit/Debit Card</div>
+                                    <div class="delivery-details">Pay using card</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div style="display: flex; gap: 10px;">
+                            <button class="btn-outline" id="back-to-shipping" style="flex: 1;">
+                                <i class="fas fa-arrow-left"></i> Back
+                            </button>
+                            <button class="btn-primary" id="place-order" style="flex: 1;">
+                                Place Order
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            modal.style.display = 'block';
+            
+            // Add event listeners for checkout steps
+            setTimeout(() => {
+                // Step navigation
+                document.getElementById('next-to-shipping').addEventListener('click', function() {
+                    showStep('shipping');
+                });
+                
+                document.getElementById('back-to-review').addEventListener('click', function() {
+                    showStep('review');
+                });
+                
+                document.getElementById('next-to-payment').addEventListener('click', function() {
+                    showStep('payment');
+                });
+                
+                document.getElementById('back-to-shipping').addEventListener('click', function() {
+                    showStep('shipping');
+                });
+                
+                // Payment option selection
+                document.querySelectorAll('[data-payment]').forEach(option => {
+                    option.addEventListener('click', function() {
+                        document.querySelectorAll('[data-payment]').forEach(opt => {
+                            opt.classList.remove('selected');
+                        });
+                        this.classList.add('selected');
+                    });
+                });
+                
+                // Place order
+                document.getElementById('place-order').addEventListener('click', function() {
+                    placeOrder();
+                });
+            }, 100);
+        }
+        
+        function showStep(step) {
+            // Hide all steps
+            document.querySelectorAll('.checkout-step').forEach(stepDiv => {
+                stepDiv.style.display = 'none';
+            });
+            
+            // Show selected step
+            document.getElementById(`step-${step}`).style.display = 'block';
+        }
+        
+        function placeOrder() {
+            const paymentMethod = document.querySelector('[data-payment].selected')?.getAttribute('data-payment') || 'cod';
+            
+            // Generate order ID
+            const orderId = 'ORD-' + Date.now().toString().substr(-6);
+            
+            // Create order
+            const order = {
+                id: orderId,
+                date: new Date().toISOString().split('T')[0],
+                items: cartData,
+                total: document.getElementById('total-amount').textContent,
+                status: 'pending',
+                paymentMethod: paymentMethod.charAt(0).toUpperCase() + paymentMethod.slice(1)
+            };
+            
+            // In a real app, this would send to server
+            alert(`Order placed successfully!\n\nOrder ID: ${orderId}\nTotal: ${order.total}\nPayment: ${order.paymentMethod}`);
+            
+            // Clear cart
+            cartData = [];
+            updateCartInStorage();
+            sessionStorage.removeItem('cartDiscount');
+            sessionStorage.removeItem('appliedCoupon');
+            
+            // Close modal and redirect
+            closeCheckoutModal();
+            showNotification('Order placed successfully!');
+            
+            // Redirect to orders page
+            setTimeout(() => {
+                window.location.href = 'Customer-myorders.html';
+            }, 1500);
+        }
+        
+        function closeCheckoutModal() {
+            document.getElementById('checkout-modal').style.display = 'none';
+        }
+        
+        function searchProducts(searchTerm) {
+            // Navigate to marketplace with search
+            sessionStorage.setItem('searchTerm', searchTerm);
+            window.location.href = 'Customer-marketplace.html';
+        }
+        
+        function logoutUser() {
+            // Clear session data
+            sessionStorage.removeItem('currentUser');
+            sessionStorage.removeItem('notificationCount');
+            sessionStorage.removeItem('cart');
+            sessionStorage.removeItem('cartDiscount');
+            sessionStorage.removeItem('appliedCoupon');
+            
+            // Redirect to login page
+            window.location.href = 'index.html';
+        }
+        
+        function showNotification(message) {
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.className = 'notification-toast';
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: var(--primary-green);
+                color: white;
+                padding: 15px 20px;
+                border-radius: 8px;
+                box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+                z-index: 1000;
+                animation: slideIn 0.3s ease;
+                max-width: 300px;
+            `;
+            
+            notification.innerHTML = `
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <i class="fas fa-check-circle" style="font-size: 1.2rem;"></i>
+                    <span>${message}</span>
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Remove notification after 3 seconds
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.parentNode.removeChild(notification);
+                    }
+                }, 300);
+            }, 3000);
+        }
+    </script>
+</body>
+</html>

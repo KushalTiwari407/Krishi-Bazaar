@@ -1,0 +1,1121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nepal Map - Krishi Bazaar</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        /* Nepal Map specific styles */
+        .map-page-header {
+            margin-bottom: 30px;
+        }
+        
+        .map-page-header h1 {
+            margin-bottom: 10px;
+        }
+        
+        .map-page-subtitle {
+            color: var(--dark-gray);
+            font-size: 1.1rem;
+        }
+        
+        .map-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 25px;
+            align-items: center;
+        }
+        
+        .map-search-box {
+            flex: 1;
+            max-width: 400px;
+            position: relative;
+        }
+        
+        .map-search-box input {
+            width: 100%;
+            padding: 12px 15px 12px 45px;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+        }
+        
+        .map-search-box i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--dark-gray);
+        }
+        
+        .map-filters {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .map-main-container {
+            display: flex;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .map-wrapper {
+            flex: 1;
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 20px;
+            box-shadow: var(--shadow);
+            min-height: 600px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        #nepal-map-container {
+            width: 100%;
+            height: 100%;
+            min-height: 500px;
+            position: relative;
+            background: #f0f7f0;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .map-region {
+            position: absolute;
+            border: 2px solid var(--primary-green);
+            border-radius: 6px;
+            background: rgba(76, 175, 80, 0.1);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-weight: 500;
+            color: var(--dark-green);
+            text-align: center;
+            padding: 5px;
+            overflow: hidden;
+        }
+        
+        .map-region:hover {
+            background: rgba(76, 175, 80, 0.3);
+            transform: scale(1.05);
+            z-index: 10;
+        }
+        
+        .map-region.high-density {
+            border-color: var(--primary-green);
+            background: rgba(46, 125, 50, 0.2);
+        }
+        
+        .map-region.medium-density {
+            border-color: var(--primary-yellow);
+            background: rgba(255, 193, 7, 0.2);
+        }
+        
+        .map-region.low-density {
+            border-color: var(--primary-brown);
+            background: rgba(141, 110, 99, 0.2);
+        }
+        
+        .region-name {
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+        
+        .region-count {
+            font-size: 0.7rem;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 1px 5px;
+            border-radius: 10px;
+        }
+        
+        .map-sidebar {
+            width: 350px;
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .map-legend {
+            margin-bottom: 30px;
+        }
+        
+        .map-legend h3 {
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--medium-gray);
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            gap: 10px;
+        }
+        
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+        }
+        
+        .legend-color.high {
+            background: rgba(46, 125, 50, 0.7);
+            border: 2px solid var(--primary-green);
+        }
+        
+        .legend-color.medium {
+            background: rgba(255, 193, 7, 0.7);
+            border: 2px solid var(--primary-yellow);
+        }
+        
+        .legend-color.low {
+            background: rgba(141, 110, 99, 0.7);
+            border: 2px solid var(--primary-brown);
+        }
+        
+        .region-details {
+            flex: 1;
+        }
+        
+        .region-details h3 {
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--medium-gray);
+        }
+        
+        #selected-region-info {
+            text-align: center;
+            color: var(--dark-gray);
+        }
+        
+        #selected-region-info i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            color: var(--light-green);
+        }
+        
+        .region-farmers-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .farmer-map-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid var(--medium-gray);
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        
+        .farmer-map-item:hover {
+            background: rgba(46, 125, 50, 0.05);
+        }
+        
+        .farmer-map-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary-yellow);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: var(--text-dark);
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+        
+        .farmer-map-info {
+            flex: 1;
+        }
+        
+        .farmer-map-info h4 {
+            margin-bottom: 5px;
+        }
+        
+        .farmer-map-products {
+            font-size: 0.85rem;
+            color: var(--dark-gray);
+        }
+        
+        .farmer-map-actions {
+            display: flex;
+            gap: 5px;
+        }
+        
+        .map-stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        
+        .map-stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            text-align: center;
+        }
+        
+        .map-stat-icon {
+            font-size: 2rem;
+            color: var(--primary-green);
+            margin-bottom: 15px;
+        }
+        
+        .map-stat-number {
+            font-size: 2rem;
+            font-weight: 600;
+            color: var(--dark-green);
+            margin-bottom: 5px;
+        }
+        
+        .map-stat-label {
+            color: var(--dark-gray);
+            font-size: 0.9rem;
+        }
+        
+        .district-list-container {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 25px;
+            box-shadow: var(--shadow);
+            margin-bottom: 40px;
+        }
+        
+        .district-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .district-item {
+            padding: 15px;
+            border: 1px solid var(--medium-gray);
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .district-item:hover {
+            border-color: var(--primary-green);
+            background: rgba(46, 125, 50, 0.05);
+            transform: translateY(-3px);
+        }
+        
+        .district-name {
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+        
+        .district-farmers {
+            font-size: 0.9rem;
+            color: var(--dark-gray);
+        }
+        
+        .district-farmers i {
+            color: var(--primary-green);
+            margin-right: 5px;
+        }
+        
+        /* Popup styles */
+        .map-popup {
+            position: absolute;
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            min-width: 300px;
+            max-width: 400px;
+            animation: popupFade 0.3s ease;
+        }
+        
+        @keyframes popupFade {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .popup-header {
+            padding: 15px 20px;
+            background: var(--primary-green);
+            color: white;
+            border-radius: var(--border-radius) var(--border-radius) 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .popup-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            line-height: 1;
+        }
+        
+        .popup-content {
+            padding: 20px;
+        }
+        
+        .popup-farmers-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .popup-farmer-item {
+            padding: 10px 0;
+            border-bottom: 1px solid var(--medium-gray);
+        }
+        
+        .popup-farmer-item:last-child {
+            border-bottom: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2><i class="fas fa-seedling"></i> <span>Krishi Bazaar</span></h2>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="farmer-dashboard.html" data-page="dashboard"><i class="fas fa-tachometer-alt"></i> <span>Dashboard</span></a></li>
+                    <li><a href="product-listing.html" data-page="products"><i class="fas fa-list"></i> <span>My Products</span></a></li>
+                    <li><a href="marketplace.html" data-page="marketplace"><i class="fas fa-store"></i> <span>Marketplace</span></a></li>
+                    <li><a href="messaging.html" data-page="messages"><i class="fas fa-comments"></i> <span>Messages</span></a></li>
+                    <li><a href="nepal-map.html" class="active" data-page="map"><i class="fas fa-map"></i> <span>Nepal Map</span></a></li>
+                    <li><a href="profile.html" data-page="profile"><i class="fas fa-user"></i> <span>My Profile</span></a></li>
+                </ul>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <div class="user-avatar" id="sidebar-avatar">RS</div>
+                    <div>
+                        <h4 id="sidebar-username">Ram Shrestha</h4>
+                        <p>Farmer</p>
+                    </div>
+                </div>
+                <button class="btn-secondary logout-btn" id="logout-btn">Logout</button>
+            </div>
+        </aside>
+        
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Topbar -->
+            <div class="topbar">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="global-search" placeholder="Search farmers or districts...">
+                </div>
+                <div class="topbar-actions">
+                    <div class="notification-icon">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-badge">3</span>
+                    </div>
+                    <div class="user-info">
+                        <div class="user-avatar" id="top-avatar">RS</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Map Page Header -->
+            <div class="map-page-header">
+                <h1 class="page-title">Nepal Agricultural Map</h1>
+                <p class="map-page-subtitle">Find farmers, products, and agricultural resources across Nepal</p>
+            </div>
+            
+            <!-- Map Controls -->
+            <div class="map-controls">
+                <div class="map-search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="map-search" placeholder="Search district or region...">
+                </div>
+                
+                <div class="map-filters">
+                    <select id="product-filter">
+                        <option value="all">All Products</option>
+                        <option value="vegetable">Vegetables</option>
+                        <option value="fruit">Fruits</option>
+                        <option value="grain">Grains</option>
+                    </select>
+                    
+                    <select id="farmer-type-filter">
+                        <option value="all">All Farmers</option>
+                        <option value="organic">Organic Farmers</option>
+                        <option value="commercial">Commercial Farmers</option>
+                        <option value="small">Small Farmers</option>
+                    </select>
+                    
+                    <button class="btn-secondary" id="reset-map">Reset View</button>
+                </div>
+            </div>
+            
+            <!-- Map Stats -->
+            <div class="map-stats-grid">
+                <div class="map-stat-card">
+                    <div class="map-stat-icon">
+                        <i class="fas fa-user-farmer"></i>
+                    </div>
+                    <div class="map-stat-number" id="total-farmers">1,245</div>
+                    <div class="map-stat-label">Active Farmers</div>
+                </div>
+                
+                <div class="map-stat-card">
+                    <div class="map-stat-icon">
+                        <i class="fas fa-leaf"></i>
+                    </div>
+                    <div class="map-stat-number" id="total-products">5,678</div>
+                    <div class="map-stat-label">Products Listed</div>
+                </div>
+                
+                <div class="map-stat-card">
+                    <div class="map-stat-icon">
+                        <i class="fas fa-map-marked-alt"></i>
+                    </div>
+                    <div class="map-stat-number" id="districts-covered">45</div>
+                    <div class="map-stat-label">Districts Covered</div>
+                </div>
+                
+                <div class="map-stat-card">
+                    <div class="map-stat-icon">
+                        <i class="fas fa-truck"></i>
+                    </div>
+                    <div class="map-stat-number" id="delivery-areas">32</div>
+                    <div class="map-stat-label">Delivery Areas</div>
+                </div>
+            </div>
+            
+            <!-- Main Map Container -->
+            <div class="map-main-container">
+                <!-- Map Visualization -->
+                <div class="map-wrapper">
+                    <div id="nepal-map-container">
+                        <!-- Nepal map with regions will be drawn here -->
+                    </div>
+                </div>
+                
+                <!-- Map Sidebar -->
+                <div class="map-sidebar">
+                    <div class="map-legend">
+                        <h3>Legend</h3>
+                        <div class="legend-item">
+                            <div class="legend-color high"></div>
+                            <span>High Farmer Density (50+ farmers)</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color medium"></div>
+                            <span>Medium Density (20-50 farmers)</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color low"></div>
+                            <span>Low Density (Under 20 farmers)</span>
+                        </div>
+                    </div>
+                    
+                    <div class="region-details">
+                        <h3>Region Details</h3>
+                        <div id="selected-region-info">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <p>Click on any region to see farmers and products available</p>
+                        </div>
+                        <div id="region-details-content" style="display: none;">
+                            <h4 id="region-name">Region Name</h4>
+                            <p id="region-stats">Farmers: 0 | Products: 0</p>
+                            <div class="region-farmers-list" id="region-farmers-list">
+                                <!-- Farmers list will be loaded here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- District List -->
+            <div class="district-list-container">
+                <h2>Browse by District</h2>
+                <p>Click on any district to view farmers and products</p>
+                
+                <div class="district-grid" id="district-grid">
+                    <!-- Districts will be loaded here -->
+                </div>
+            </div>
+            
+            <!-- Popular Products by Region -->
+            <div class="section-header">
+                <h2>Popular Products by Region</h2>
+            </div>
+            
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Region</th>
+                            <th>Top Product</th>
+                            <th>Average Price</th>
+                            <th>Farmers</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="region-products-table">
+                        <tr>
+                            <td>Kathmandu Valley</td>
+                            <td>Organic Vegetables</td>
+                            <td>NPR 75/kg</td>
+                            <td>45 farmers</td>
+                            <td><button class="btn-outline view-region-btn" data-region="kathmandu">View</button></td>
+                        </tr>
+                        <tr>
+                            <td>Pokhara (Kaski)</td>
+                            <td>Fresh Fruits</td>
+                            <td>NPR 120/kg</td>
+                            <td>32 farmers</td>
+                            <td><button class="btn-outline view-region-btn" data-region="pokhara">View</button></td>
+                        </tr>
+                        <tr>
+                            <td>Chitwan</td>
+                            <td>Rice & Grains</td>
+                            <td>NPR 150/kg</td>
+                            <td>28 farmers</td>
+                            <td><button class="btn-outline view-region-btn" data-region="chitwan">View</button></td>
+                        </tr>
+                        <tr>
+                            <td>Morang/Jhapa</td>
+                            <td>Tea & Spices</td>
+                            <td>NPR 200/kg</td>
+                            <td>36 farmers</td>
+                            <td><button class="btn-outline view-region-btn" data-region="morang">View</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+    
+    <script>
+        // Nepal Map JavaScript
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check login
+            const currentUser = JSON.parse(sessionStorage.getItem('currentUser'));
+            if (!currentUser) {
+                window.location.href = 'index.html';
+                return;
+            }
+            
+            // Update user info
+            updateUserInfo(currentUser);
+            
+            // Initialize Nepal map
+            initNepalMap();
+            
+            // Load districts
+            loadDistricts();
+            
+            // Setup event listeners
+            setupMapEventListeners();
+        });
+        
+        function updateUserInfo(user) {
+            const avatarElements = document.querySelectorAll('.user-avatar');
+            const usernameElements = document.querySelectorAll('#sidebar-username');
+            
+            const initials = user.name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
+            
+            avatarElements.forEach(el => {
+                el.textContent = initials;
+            });
+            
+            usernameElements.forEach(el => {
+                if (el) el.textContent = user.name;
+            });
+        }
+        
+        function initNepalMap() {
+            const mapContainer = document.getElementById('nepal-map-container');
+            if (!mapContainer) return;
+            
+            // Define regions (simplified representation of Nepal)
+            const regions = [
+                {
+                    id: 'kathmandu',
+                    name: 'Kathmandu Valley',
+                    left: '45%',
+                    top: '38%',
+                    width: '10%',
+                    height: '10%',
+                    farmers: 45,
+                    products: 230,
+                    density: 'high',
+                    topProducts: ['Tomatoes', 'Cauliflower', 'Green Vegetables']
+                },
+                {
+                    id: 'pokhara',
+                    name: 'Pokhara (Kaski)',
+                    left: '32%',
+                    top: '30%',
+                    width: '12%',
+                    height: '12%',
+                    farmers: 32,
+                    products: 180,
+                    density: 'medium',
+                    topProducts: ['Mangoes', 'Oranges', 'Bananas']
+                },
+                {
+                    id: 'chitwan',
+                    name: 'Chitwan',
+                    left: '42%',
+                    top: '52%',
+                    width: '11%',
+                    height: '11%',
+                    farmers: 28,
+                    products: 150,
+                    density: 'medium',
+                    topProducts: ['Rice', 'Wheat', 'Maize']
+                },
+                {
+                    id: 'morang',
+                    name: 'Morang/Jhapa',
+                    left: '60%',
+                    top: '42%',
+                    width: '13%',
+                    height: '13%',
+                    farmers: 36,
+                    products: 210,
+                    density: 'high',
+                    topProducts: ['Tea', 'Ginger', 'Turmeric']
+                },
+                {
+                    id: 'lumbini',
+                    name: 'Lumbini',
+                    left: '35%',
+                    top: '48%',
+                    width: '9%',
+                    height: '9%',
+                    farmers: 22,
+                    products: 120,
+                    density: 'low',
+                    topProducts: ['Rice', 'Pulses', 'Oilseeds']
+                },
+                {
+                    id: 'mustang',
+                    name: 'Mustang',
+                    left: '28%',
+                    top: '20%',
+                    width: '8%',
+                    height: '8%',
+                    farmers: 8,
+                    products: 45,
+                    density: 'low',
+                    topProducts: ['Apples', 'Walnuts', 'Medicinal Herbs']
+                }
+            ];
+            
+            // Clear container
+            mapContainer.innerHTML = '';
+            
+            // Add regions to map
+            regions.forEach(region => {
+                const regionEl = document.createElement('div');
+                regionEl.className = `map-region ${region.density}-density`;
+                regionEl.id = `region-${region.id}`;
+                regionEl.style.left = region.left;
+                regionEl.style.top = region.top;
+                regionEl.style.width = region.width;
+                regionEl.style.height = region.height;
+                regionEl.setAttribute('data-region', JSON.stringify(region));
+                
+                regionEl.innerHTML = `
+                    <div class="region-name">${region.name}</div>
+                    <div class="region-count">${region.farmers} farmers</div>
+                `;
+                
+                regionEl.addEventListener('click', function() {
+                    const regionData = JSON.parse(this.getAttribute('data-region'));
+                    showRegionDetails(regionData);
+                });
+                
+                mapContainer.appendChild(regionEl);
+            });
+            
+            // Add Nepal outline (simplified)
+            const nepalOutline = document.createElement('div');
+            nepalOutline.style.position = 'absolute';
+            nepalOutline.style.top = '20%';
+            nepalOutline.style.left = '25%';
+            nepalOutline.style.width = '50%';
+            nepalOutline.style.height = '60%';
+            nepalOutline.style.border = '3px solid var(--dark-green)';
+            nepalOutline.style.borderRadius = '10px';
+            nepalOutline.style.pointerEvents = 'none';
+            nepalOutline.style.opacity = '0.3';
+            mapContainer.appendChild(nepalOutline);
+            
+            // Add title
+            const mapTitle = document.createElement('div');
+            mapTitle.style.position = 'absolute';
+            mapTitle.style.bottom = '20px';
+            mapTitle.style.left = '20px';
+            mapTitle.style.background = 'rgba(255, 255, 255, 0.9)';
+            mapTitle.style.padding = '10px 20px';
+            mapTitle.style.borderRadius = 'var(--border-radius)';
+            mapTitle.style.fontWeight = '500';
+            mapTitle.style.boxShadow = 'var(--shadow)';
+            mapTitle.textContent = 'Agricultural Map of Nepal';
+            mapContainer.appendChild(mapTitle);
+        }
+        
+        function loadDistricts() {
+            const districtGrid = document.getElementById('district-grid');
+            if (!districtGrid) return;
+            
+            // Sample districts data
+            const districts = [
+                { name: 'Kathmandu', farmers: 45, products: 230 },
+                { name: 'Lalitpur', farmers: 28, products: 150 },
+                { name: 'Bhaktapur', farmers: 22, products: 120 },
+                { name: 'Kaski (Pokhara)', farmers: 32, products: 180 },
+                { name: 'Chitwan', farmers: 28, products: 150 },
+                { name: 'Morang', farmers: 25, products: 160 },
+                { name: 'Jhapa', farmers: 30, products: 175 },
+                { name: 'Sunsari', farmers: 20, products: 110 },
+                { name: 'Rupandehi', farmers: 18, products: 95 },
+                { name: 'Nawalparasi', farmers: 15, products: 85 },
+                { name: 'Banke', farmers: 12, products: 70 },
+                { name: 'Bardiya', farmers: 10, products: 60 }
+            ];
+            
+            districtGrid.innerHTML = '';
+            
+            districts.forEach(district => {
+                const districtItem = document.createElement('div');
+                districtItem.className = 'district-item';
+                districtItem.setAttribute('data-district', district.name.toLowerCase());
+                districtItem.innerHTML = `
+                    <div class="district-name">${district.name}</div>
+                    <div class="district-farmers">
+                        <i class="fas fa-user-farmer"></i> ${district.farmers} farmers
+                    </div>
+                    <div class="district-farmers">
+                        <i class="fas fa-leaf"></i> ${district.products} products
+                    </div>
+                `;
+                
+                districtItem.addEventListener('click', function() {
+                    const districtName = this.getAttribute('data-district');
+                    showDistrictDetails(districtName);
+                });
+                
+                districtGrid.appendChild(districtItem);
+            });
+        }
+        
+        function showRegionDetails(region) {
+            // Update sidebar
+            document.getElementById('selected-region-info').style.display = 'none';
+            document.getElementById('region-details-content').style.display = 'block';
+            
+            document.getElementById('region-name').textContent = region.name;
+            document.getElementById('region-stats').textContent = 
+                `Farmers: ${region.farmers} | Products: ${region.products}`;
+            
+            // Load farmers for this region
+            loadRegionFarmers(region.id);
+            
+            // Highlight region on map
+            document.querySelectorAll('.map-region').forEach(el => {
+                el.style.boxShadow = 'none';
+                el.style.zIndex = '1';
+            });
+            
+            const regionEl = document.getElementById(`region-${region.id}`);
+            if (regionEl) {
+                regionEl.style.boxShadow = '0 0 0 3px var(--primary-green)';
+                regionEl.style.zIndex = '10';
+            }
+        }
+        
+        function loadRegionFarmers(regionId) {
+            const farmersList = document.getElementById('region-farmers-list');
+            if (!farmersList) return;
+            
+            // Sample farmers data by region
+            const farmersByRegion = {
+                'kathmandu': [
+                    { id: 1, name: 'Ram Shrestha', products: 'Tomatoes, Cauliflower, Peas', rating: 4.5 },
+                    { id: 2, name: 'Hari Bahadur', products: 'Spinach, Radish, Carrots', rating: 4.2 },
+                    { id: 3, name: 'Sita Devi', products: 'Potatoes, Onions, Garlic', rating: 4.7 }
+                ],
+                'pokhara': [
+                    { id: 4, name: 'Mohan Gurung', products: 'Mangoes, Oranges, Lemons', rating: 4.8 },
+                    { id: 5, name: 'Sunita Thapa', products: 'Bananas, Papaya, Guava', rating: 4.4 }
+                ],
+                'chitwan': [
+                    { id: 6, name: 'Rajesh Yadav', products: 'Rice, Wheat, Maize', rating: 4.6 },
+                    { id: 7, name: 'Anita Chaudhary', products: 'Lentils, Chickpeas', rating: 4.3 }
+                ],
+                'morang': [
+                    { id: 8, name: 'Bimal Karki', products: 'Tea, Ginger, Turmeric', rating: 4.9 },
+                    { id: 9, name: 'Sarita Rai', products: 'Cardamom, Cinnamon', rating: 4.5 }
+                ]
+            };
+            
+            const farmers = farmersByRegion[regionId] || [
+                { id: 10, name: 'Local Farmer', products: 'Mixed Products', rating: 4.0 }
+            ];
+            
+            farmersList.innerHTML = '';
+            
+            farmers.forEach(farmer => {
+                const initials = farmer.name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
+                
+                const farmerItem = document.createElement('div');
+                farmerItem.className = 'farmer-map-item';
+                farmerItem.innerHTML = `
+                    <div class="farmer-map-avatar">${initials}</div>
+                    <div class="farmer-map-info">
+                        <h4>${farmer.name}</h4>
+                        <div class="farmer-map-products">${farmer.products}</div>
+                        <div class="farmer-rating">
+                            <i class="fas fa-star"></i> ${farmer.rating}
+                        </div>
+                    </div>
+                    <div class="farmer-map-actions">
+                        <button class="btn-outline contact-farmer-map" data-farmer-id="${farmer.id}">Contact</button>
+                    </div>
+                `;
+                
+                farmersList.appendChild(farmerItem);
+            });
+            
+            // Add event listeners to contact buttons
+            document.querySelectorAll('.contact-farmer-map').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const farmerId = this.getAttribute('data-farmer-id');
+                    contactFarmerFromMap(farmerId);
+                });
+            });
+        }
+        
+        function showDistrictDetails(districtName) {
+            // For now, show an alert. In a full app, this would show detailed district info
+            const districtNameFormatted = districtName.charAt(0).toUpperCase() + districtName.slice(1);
+            alert(`Showing details for ${districtNameFormatted} district.\n\nFarmers and products data would be loaded here.`);
+            
+            // Highlight corresponding region on map if it exists
+            const regionMap = {
+                'kathmandu': 'kathmandu',
+                'lalitpur': 'kathmandu',
+                'bhaktapur': 'kathmandu',
+                'kaski': 'pokhara',
+                'chitwan': 'chitwan',
+                'morang': 'morang',
+                'jhapa': 'morang'
+            };
+            
+            if (regionMap[districtName]) {
+                const regionEl = document.getElementById(`region-${regionMap[districtName]}`);
+                if (regionEl) {
+                    // Trigger click on the region
+                    regionEl.click();
+                }
+            }
+        }
+        
+        function setupMapEventListeners() {
+            // Map search
+            const mapSearch = document.getElementById('map-search');
+            if (mapSearch) {
+                mapSearch.addEventListener('input', searchMap);
+            }
+            
+            // Global search
+            const globalSearch = document.getElementById('global-search');
+            if (globalSearch) {
+                globalSearch.addEventListener('input', searchAll);
+            }
+            
+            // Filters
+            const productFilter = document.getElementById('product-filter');
+            const farmerTypeFilter = document.getElementById('farmer-type-filter');
+            
+            if (productFilter) {
+                productFilter.addEventListener('change', applyFilters);
+            }
+            
+            if (farmerTypeFilter) {
+                farmerTypeFilter.addEventListener('change', applyFilters);
+            }
+            
+            // Reset map
+            const resetMapBtn = document.getElementById('reset-map');
+            if (resetMapBtn) {
+                resetMapBtn.addEventListener('click', resetMapView);
+            }
+            
+            // View region buttons in table
+            document.querySelectorAll('.view-region-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const regionId = this.getAttribute('data-region');
+                    const regionEl = document.getElementById(`region-${regionId}`);
+                    if (regionEl) {
+                        regionEl.click();
+                    }
+                });
+            });
+            
+            // Navigation links
+            document.querySelectorAll('.sidebar-nav a').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    if (this.getAttribute('data-page')) {
+                        e.preventDefault();
+                        navigateToPage(this.getAttribute('data-page'));
+                    }
+                });
+            });
+            
+            // Logout
+            const logoutBtn = document.getElementById('logout-btn');
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', function() {
+                    sessionStorage.clear();
+                    window.location.href = 'index.html';
+                });
+            }
+        }
+        
+        function searchMap() {
+            const searchTerm = this.value.toLowerCase();
+            const regionItems = document.querySelectorAll('.map-region');
+            const districtItems = document.querySelectorAll('.district-item');
+            
+            // Search regions
+            regionItems.forEach(item => {
+                const regionName = item.querySelector('.region-name').textContent.toLowerCase();
+                if (regionName.includes(searchTerm)) {
+                    item.style.display = 'flex';
+                    // Highlight matching regions
+                    item.style.boxShadow = '0 0 0 3px var(--primary-yellow)';
+                } else {
+                    item.style.display = 'none';
+                    item.style.boxShadow = 'none';
+                }
+            });
+            
+            // Search districts
+            districtItems.forEach(item => {
+                const districtName = item.querySelector('.district-name').textContent.toLowerCase();
+                if (districtName.includes(searchTerm)) {
+                    item.style.display = 'block';
+                    item.style.borderColor = 'var(--primary-yellow)';
+                    item.style.background = 'rgba(255, 193, 7, 0.1)';
+                } else {
+                    item.style.display = 'none';
+                    item.style.borderColor = '';
+                    item.style.background = '';
+                }
+            });
+        }
+        
+        function searchAll() {
+            const searchTerm = this.value.toLowerCase();
+            if (searchTerm.length > 2) {
+                alert(`Searching for "${searchTerm}" across farmers, products, and districts...\n\nSearch results would appear here.`);
+            }
+        }
+        
+        function applyFilters() {
+            const productType = document.getElementById('product-filter').value;
+            const farmerType = document.getElementById('farmer-type-filter').value;
+            
+            // In a real app, this would filter the map and data
+            alert(`Filters applied:\nProduct Type: ${productType}\nFarmer Type: ${farmerType}\n\nMap view would update accordingly.`);
+        }
+        
+        function resetMapView() {
+            // Reset filters
+            document.getElementById('product-filter').value = 'all';
+            document.getElementById('farmer-type-filter').value = 'all';
+            document.getElementById('map-search').value = '';
+            
+            // Reset region display
+            document.querySelectorAll('.map-region').forEach(item => {
+                item.style.display = 'flex';
+                item.style.boxShadow = 'none';
+            });
+            
+            // Reset district display
+            document.querySelectorAll('.district-item').forEach(item => {
+                item.style.display = 'block';
+                item.style.borderColor = '';
+                item.style.background = '';
+            });
+            
+            // Reset sidebar
+            document.getElementById('selected-region-info').style.display = 'block';
+            document.getElementById('region-details-content').style.display = 'none';
+        }
+        
+        function contactFarmerFromMap(farmerId) {
+            // Sample farmer names by ID
+            const farmerNames = {
+                1: 'Ram Shrestha',
+                2: 'Hari Bahadur',
+                3: 'Sita Devi',
+                4: 'Mohan Gurung',
+                5: 'Sunita Thapa',
+                6: 'Rajesh Yadav',
+                7: 'Anita Chaudhary',
+                8: 'Bimal Karki',
+                9: 'Sarita Rai',
+                10: 'Local Farmer'
+            };
+            
+            const farmerName = farmerNames[farmerId] || 'Unknown Farmer';
+            
+            // Save to session storage and navigate to messages
+            const contactInfo = {
+                id: farmerId,
+                name: farmerName,
+                type: 'farmer'
+            };
+            
+            sessionStorage.setItem('selectedContact', JSON.stringify(contactInfo));
+            navigateToPage('messages');
+        }
+        
+        function navigateToPage(page) {
+            const currentUser = JSON.parse(sessionStorage.getItem('currentUser'));
+            const userType = currentUser?.type || 'customer';
+            
+            const pageMap = {
+                'dashboard': userType === 'farmer' ? 'farmer-dashboard.html' : 'customer-dashboard.html',
+                'products': 'product-listing.html',
+                'marketplace': 'marketplace.html',
+                'messages': 'messaging.html',
+                'map': 'nepal-map.html',
+                'profile': 'profile.html'
+            };
+            
+            if (pageMap[page]) {
+                window.location.href = pageMap[page];
+            }
+        }
+    </script>
+</body>
+</html>

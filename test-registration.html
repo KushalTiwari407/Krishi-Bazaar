@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Registration Flow</title>
+</head>
+<body>
+    <h1>Test Registration Flow</h1>
+    <button onclick="testRegistration()">Test Farmer Registration</button>
+    <button onclick="checkStorage()">Check SessionStorage</button>
+    <button onclick="clearStorage()">Clear Storage</button>
+    <div id="output" style="margin-top: 20px; font-family: monospace; white-space: pre;"></div>
+    
+    <script>
+        function testRegistration() {
+            const newUser = {
+                id: Date.now(),
+                name: "Test Farmer User",
+                email: "testfarmer@example.com",
+                phone: "9841234567",
+                location: "Kathmandu",
+                district: "Kathmandu",
+                type: "farmer",
+                joinDate: new Date().toISOString().split('T')[0],
+                products: 0,
+                orders: 0,
+                rating: 0,
+                earnings: "NPR 0"
+            };
+            
+            sessionStorage.setItem('currentUser', JSON.stringify(newUser));
+            sessionStorage.setItem('userType', 'farmer');
+            sessionStorage.setItem('isLoggedIn', 'true');
+            
+            document.getElementById('output').textContent = 'Registration data saved!\n' + JSON.stringify(newUser, null, 2);
+            
+            setTimeout(() => {
+                window.location.href = 'farmer-dashboard.html';
+            }, 1000);
+        }
+        
+        function checkStorage() {
+            const currentUser = sessionStorage.getItem('currentUser');
+            const userType = sessionStorage.getItem('userType');
+            const isLoggedIn = sessionStorage.getItem('isLoggedIn');
+            
+            document.getElementById('output').textContent = 
+                'CurrentUser: ' + currentUser + '\n\n' +
+                'UserType: ' + userType + '\n' +
+                'IsLoggedIn: ' + isLoggedIn;
+        }
+        
+        function clearStorage() {
+            sessionStorage.clear();
+            document.getElementById('output').textContent = 'Storage cleared!';
+        }
+    </script>
+</body>
+</html>

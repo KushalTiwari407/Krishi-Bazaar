@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Test - Krishi Bazaar</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            border-bottom: 3px solid #27ae60;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #34495e;
+            margin-top: 30px;
+        }
+        .test-section {
+            background: #f8f9fa;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 8px;
+            border-left: 4px solid #27ae60;
+        }
+        button {
+            background: #27ae60;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 5px;
+            transition: all 0.3s;
+        }
+        button:hover {
+            background: #229954;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(39, 174, 96, 0.3);
+        }
+        button:active {
+            transform: translateY(0);
+        }
+        .result {
+            background: #ecf0f1;
+            padding: 15px;
+            margin-top: 15px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            white-space: pre-wrap;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .success {
+            color: #27ae60;
+            font-weight: bold;
+        }
+        .error {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+        .info {
+            background: #3498db;
+            color: white;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+        }
+        .stat-label {
+            opacity: 0.9;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🌾 Krishi Bazaar - API Test Page</h1>
+        
+        <div class="info">
+            <strong>🎯 Purpose:</strong> This page tests the backend API and database connectivity.
+            <br>Click the buttons below to test different API endpoints.
+        </div>
+
+        <!-- Database Stats -->
+        <h2>📊 Database Statistics</h2>
+        <div class="test-section">
+            <button onclick="loadStats()">Load Statistics</button>
+            <div id="stats-container" class="stats"></div>
+        </div>
+
+        <!-- Users Test -->
+        <h2>👥 Users Test</h2>
+        <div class="test-section">
+            <button onclick="testLogin()">Test Login (Farmer)</button>
+            <button onclick="testLoginCustomer()">Test Login (Customer)</button>
+            <button onclick="getAllUsers()">Get All Users</button>
+            <div id="users-result" class="result"></div>
+        </div>
+
+        <!-- Products Test -->
+        <h2>🌾 Products Test</h2>
+        <div class="test-section">
+            <button onclick="getAllProducts()">Get All Products</button>
+            <button onclick="getVegetables()">Get Vegetables Only</button>
+            <button onclick="getFarmerProducts()">Get Ram's Products</button>
+            <div id="products-result" class="result"></div>
+        </div>
+
+        <!-- Orders Test -->
+        <h2>📦 Orders Test</h2>
+        <div class="test-section">
+            <button onclick="createTestOrder()">Create Test Order</button>
+            <button onclick="getAllOrders()">Get All Orders</button>
+            <div id="orders-result" class="result"></div>
+        </div>
+
+        <!-- Messages Test -->
+        <h2>💬 Messages Test</h2>
+        <div class="test-section">
+            <button onclick="sendTestMessage()">Send Test Message</button>
+            <button onclick="getConversation()">Get Conversation</button>
+            <div id="messages-result" class="result"></div>
+        </div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script src="js/utils.js"></script>
+    <script>
+        // Load stats on page load
+        window.onload = () => {
+            loadStats();
+        };
+
+        async function loadStats() {
+            const container = document.getElementById('stats-container');
+            container.innerHTML = '<p>Loading...</p>';
+            
+            try {
+                const [products, users] = await Promise.all([
+                    fetch('/api/products').then(r => r.json()),
+                    fetch('/api/auth/users').then(r => r.json())
+                ]);
+
+                const farmers = users.filter(u => u.user_type === 'farmer');
+                const customers = users.filter(u => u.user_type === 'customer');
+
+                container.innerHTML = `
+                    <div class="stat-card">
+                        <div class="stat-number">${users.length}</div>
+                        <div class="stat-label">Total Users</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">${farmers.length}</div>
+                        <div class="stat-label">Farmers</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">${customers.length}</div>
+                        <div class="stat-label">Customers</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">${products.length}</div>
+                        <div class="stat-label">Products</div>
+                    </div>
+                `;
+            } catch (error) {
+                container.innerHTML = `<p class="error">Error loading stats: ${error.message}</p>`;
+            }
+        }
+
+        async function testLogin() {
+            const result = document.getElementById('users-result');
+            result.innerHTML = 'Testing login...';
+            
+            try {
+                const response = await API.auth.login('ram@farmer.com', 'farmer123');
+                if (response.success) {
+                    result.innerHTML = `<span class="success">✅ Login Successful!</span>\n\n${JSON.stringify(response.user, null, 2)}`;
+                } else {
+                    result.innerHTML = `<span class="error">❌ Login Failed:</span> ${response.message}`;
+                }
+            } catch (error) {
+                result.innerHTML = `<span class="error">❌ Error:</span> ${error.message}`;
+            }
+        }
+
+        async function testLoginCustomer() {
+            const result = document.getElementById('users-result');
+            result.innerHTML = 'Testing login...';
+            
+            try {
+                const response = await API.auth.login('rajesh@customer.com', 'customer123');
+                if (response.success) {
+                    result.innerHTML = `<span class="success">✅ Login Successful!</span>\n\n${JSON.stringify(response.user, null, 2)}`;
+                } else {
+                    result.innerHTML = `<span class="error">❌ Login Failed:</span> ${response.message}`;
+                }
+            } catch (error) {
+                result.innerHTML = `<span class="error">❌ Error:</span> ${error.message}`;
+            }
+        }
+
+        async function getAllUsers() {
+            const result = document.getElementById('users-result');
+            result.innerHTML = 'Loading users...';
+            
+            try {
+                const response = await fetch('/api/auth/users');
+                const users = await response.json();
+                result.innerHTML = `<span class="success">✅ Found ${users.length} users</span>\n\n${JSON.stringify(users, null, 2)}`;
+            } catch (error) {
+                result.innerHTML = `<span class="error">❌ Error:</span> ${error.message}`;
+            }
+        }
+
+        async function getAllProducts() {
+            const result = document.getElementById('products-result');
+            result.innerHTML = 'Loading products...';
+            
+            try {
+                const products = await API.products.getAll();
+                result.innerHTML = `<span class="success">✅ Found ${products.length} products</span>\n\n${JSON.stringify(products, null, 2)}`;
+            } catch (error) {
+                result.innerHTML = `<span class="error">❌ Error:</span> ${error.message}`;
+            }
+        }
+
+        async function getVegetables() {
+            const result = document.getElementById('products-result');
+            result.innerHTML = 'Loading vegetables...';
+            
+            try {
+                const products = await API.products.getAll({ category: 'vegetables' });
+                result.innerHTML = `<span class="success">✅ Found ${products.length} vegetables</span>\n\n${JSON.stringify(products, null, 2)}`;
+            } catch (error) {
+                result.innerHTML = `<span class="error">❌ Error:</span> ${error.message}`;
+            }
+        }
+
+        async function getFarmerProducts() {
+            const result = document.getElementById('products-result');
+            result.innerHTML = 'Loading Ram\'s products...';
+            
+            try {
+                const products = await API.products.getByFarmer(1);
+                result.innerHTML = `<span class="success">✅ Found ${products.length} products</span>\n\n${JSON.stringify(products, null, 2)}`;
+            } catch (error) {
+                result.innerHTML = `<span class="error">❌ Error:</span> ${error.message}`;
+            }
+        }
+
+        async function createTestOrder() {
+            const result = document.getElementById('orders-result');
+            result.innerHTML = 'Creating test order...';
+            
+            try {
+                const order = await API.orders.create({
+                    customerId: 7, // Rajesh Kumar
+                    productId: 1,  // Organic Tomatoes
+                    farmerId: 1,   // Ram Shrestha
+                    quantity: 5,
+                    totalPrice: 400,
+                    deliveryMethod: 'delivery',
+                    deliveryDate: '2025-12-25'
+                });
+                result.innerHTML = `<span class="success">✅ Order Created!</span>\n\n${JSON.stringify(order, null, 2)}`;
+            } catch (error) {
+                result.innerHTML = `<span class="error">❌ Error:</span> ${error.message}`;
+            }
+        }
+
+        async function getAllOrders() {
+            const result = document.getElementById('orders-result');
+            result.innerHTML = 'Loading orders...';
+            
+            try {
+                const orders = await API.orders.getAll();
+                result.innerHTML = `<span class="success">✅ Found ${orders.length} orders</span>\n\n${JSON.stringify(orders, null, 2)}`;
+            } catch (error) {
+                result.innerHTML = `<span class="error">❌ Error:</span> ${error.message}`;
+            }
+        }
+
+        async function sendTestMessage() {
+            const result = document.getElementById('messages-result');
+            result.innerHTML = 'Sending message...';
+            
+            try {
+                const message = await API.messages.send({
+                    senderId: 7,    // Rajesh (customer)
+                    receiverId: 1,  // Ram (farmer)
+                    message: 'Hello! Are the tomatoes organic?'
+                });
+                result.innerHTML = `<span class="success">✅ Message Sent!</span>\n\n${JSON.stringify(message, null, 2)}`;
+            } catch (error) {
+                result.innerHTML = `<span class="error">❌ Error:</span> ${error.message}`;
+            }
+        }
+
+        async function getConversation() {
+            const result = document.getElementById('messages-result');
+            result.innerHTML = 'Loading conversation...';
+            
+            try {
+                const messages = await API.messages.getConversation(7, 1);
+                result.innerHTML = `<span class="success">✅ Found ${messages.length} messages</span>\n\n${JSON.stringify(messages, null, 2)}`;
+            } catch (error) {
+                result.innerHTML = `<span class="error">❌ Error:</span> ${error.message}`;
+            }
+        }
+    </script>
+</body>
+</html>
